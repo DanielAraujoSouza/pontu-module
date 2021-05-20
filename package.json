@@ -1,0 +1,24 @@
+{
+  "main": "lib/binding.js",
+  "dependencies": {
+    "node-addon-api": "^1.1.0",
+    "tap-spec": "^2.2.2",
+    "tape": "^5.2.2"
+  },
+  "scripts": {
+    "test": "node --napi-modules ./test/test_binding.js | tap-spec"
+  },
+  "gypfile": true,
+  "name": "pontu-module",
+  "version": "1.0.0",
+  "description": "Desenvolvida pelo Grupo interFACES da Universidade Federal do Ceará, o pontu-module é um módulo para Node.js que incorpora a biblioteca compacta e veloz, pontu, escrita em C para análise e manipulação de nuvens de pontos.",
+  "keywords": [
+    "pontu-module",
+    "pontu",
+    "nuvens",
+    "pontos",
+    "pcd"
+  ],
+  "author": "Daniel Araújo Chaves Souza",
+  "license": "ISC"
+}

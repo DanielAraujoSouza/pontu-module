@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"node_api.h": "c",
+			"functional": "c",
+			"array": "c",
+			"string": "c",
+			"string_view": "c",
+			"random": "c",
+			"bitset": "c",
+			"set": "c",
+			"common.h": "c",
+			"ctype.h": "c",
+			"chrono": "c",
+			"algorithm": "c",
+			"registration_wrappers.h": "c",
+			"cloud_wrappers.h": "c",
+			"sstream": "c",
+			"matrix.h": "c",
+			"converters.h": "c"
+		}
+	}
+}
