@@ -3,7 +3,7 @@
 // Cloud save methods
 static void CloudSaveExecute(napi_env env, void* data) {
   CloudSaveData* addon_data = (CloudSaveData*)data;
-  char * ext = file_ext(addon_data->filename);
+  const char * ext = file_ext(addon_data->filename);
 
   int result = 0;
   if (strcmp(ext, "csv") == 0) {
@@ -22,8 +22,7 @@ static void CloudSaveExecute(napi_env env, void* data) {
   if (result == 0) {
     addon_data->cloud = NULL;
   }
-
-  free(ext);
+  //free((char*)ext);
 }
 
 static void CloudSaveComplete(napi_env env, napi_status status, void* data) {
@@ -109,27 +108,31 @@ napi_value CloudSavePromise(napi_env env, napi_callback_info info) {
 // Cloud load methods
 static void CloudLoadExecute(napi_env env, void* data) {
   CloudLoadData* addon_data = (CloudLoadData*)data;
-  char * ext = file_ext(addon_data->filename);
+  const char * ext = file_ext(addon_data->filename);
   
-  if (strcmp(ext, "csv") == 0) {
+  if (strcmp(ext, "csv") == 0 || strcmp(ext, "CSV") == 0) {
     addon_data->cloud = cloud_load_csv(addon_data->filename);
   }
-  else if (strcmp(ext, "obj") == 0) {
+  else if (strcmp(ext, "json") == 0 || strcmp(ext, "JSON") == 0) {
+    addon_data->cloud = cloud_load_json(addon_data->filename);
+  }
+  else if (strcmp(ext, "obj") == 0 || strcmp(ext, "OBJ") == 0) {
     addon_data->cloud = cloud_load_obj(addon_data->filename);
   }
-  else if (strcmp(ext, "pcd") == 0) {
+  else if (strcmp(ext, "pcd") == 0 || strcmp(ext, "PCD") == 0) {
     addon_data->cloud = cloud_load_pcd(addon_data->filename);
   }
-  else if (strcmp(ext, "ply") == 0) {
+  else if (strcmp(ext, "ply") == 0 || strcmp(ext, "PLY") == 0) {
     addon_data->cloud = cloud_load_ply(addon_data->filename);
   }
-  else if (strcmp(ext, "xyz") == 0) {
+  else if (strcmp(ext, "xyz") == 0 || strcmp(ext, "XYZ") == 0) {
     addon_data->cloud = cloud_load_xyz(addon_data->filename);
   }
   else {
+    printf("Erro, %s\n", ext);
     addon_data->cloud = NULL;
   }
-  free(ext);
+  //free((char*)ext);
 }
 
 static void CloudLoadComplete(napi_env env, napi_status status, void* data) {

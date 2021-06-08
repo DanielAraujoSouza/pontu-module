@@ -99,6 +99,8 @@ struct cloud *cloud_load_ply(const char *filename);
  */
 struct cloud *cloud_load_pcd(const char *filename);
 
+struct cloud *cloud_load_json(const char *filename);
+
 /**
  * \brief Loads cloud from an OBJ file
  * \param filename File name

@@ -24,7 +24,7 @@
  * @param status Código de status integral indicando o sucesso ou falha de uma chamada Node-API. 
  * @param msg Mensagem que será apresetada junto a exceção, caso uma seja lançada.
  */
-void check_status(napi_env env, napi_status status, char* msg);
+void check_status(napi_env env, napi_status status, const char* msg);
 
 /**
  * @brief Verifica se um napi_value corresponde a um determinado napi_valuetype, e lança uma excesão caso
@@ -44,22 +44,21 @@ void throw_type_error(napi_env env, napi_value value, napi_valuetype expected_ty
  * @param name Nome do método.
  * @param method Ponteiro para ao metodo que será chamado pelo módulo.
  */
-void export_function(napi_env env, napi_value exports, char *name, void *method);
+void export_function(napi_env env, napi_value exports, const char *name, void *method);
 
 /**
- * @brief Retorna uma cópia da string de entrada convertida em minúsculo.
+ * @brief Converte uma string em minusculo.
  * 
  * @param str String de entrada.
- * @return char* String convertida em minúsculo.
  */
-char *to_lower(char *str);
+void to_lower(char *str);
 
 /**
  * @brief Retonar a extensão de um arquivo.
  * 
  * @param filename Nome do arquivo.
- * @return char* Extensão do aquivo (char[3]).
+ * @return const char* Extensão do aquivo (char[3]).
  */
-char *file_ext(char *filename);
+const char *file_ext(const char *filename);
 
 #endif // COMMON_H

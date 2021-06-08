@@ -217,6 +217,49 @@ struct cloud *cloud_load_pcd(const char *filename)
 	return cloud;
 }
 
+struct cloud *cloud_load_json(const char *filename)
+{	
+	FILE *file = fopen(filename, "r");
+	if (file == NULL)
+		return NULL;
+
+	struct cloud *cloud = cloud_new();
+	if (cloud == NULL)
+	{
+		fclose(file);
+		return NULL;
+	}
+
+	real x = 0;
+	real y = 0;
+	real z = 0;
+	while (!feof(file))
+	{
+		char buffer[CLOUD_MAXBUFFER];
+		if (fgets(buffer, CLOUD_MAXBUFFER, file))
+		{
+			if (buffer[7] == 'x') {
+				sscanf(buffer, "      \"x\": %lf,\n", &x);
+				if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
+					sscanf(buffer, "      \"y\": %lf,\n", &y);
+				}
+				if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
+					sscanf(buffer, "      \"z\": %lf,\n", &z);
+				}
+				cloud_insert_real(cloud, x, y, z);
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	fclose(file);
+
+	return cloud;
+}
+
 struct cloud *cloud_load_obj(const char *filename)
 {
 	FILE *file = fopen(filename, "r");
@@ -1095,9 +1138,9 @@ real cloud_rmse(struct cloud *source,
 
 	for (uint j = 0; j < cloud_size(src); j++)
 	{
-		printf("Par de pontos %d\n", j);
-		printf(" sx: %lf sy: %lf sz: %lf\n", src_ps->point->x, src_ps->point->y, src_ps->point->z);
-		printf(" tx: %lf ty: %lf tz: %lf\n", tgt_ps->point->x, tgt_ps->point->y, tgt_ps->point->z);
+		//printf("Par de pontos %d\n", j);
+		//printf(" sx: %lf sy: %lf sz: %lf\n", src_ps->point->x, src_ps->point->y, src_ps->point->z);
+		//printf(" tx: %lf ty: %lf tz: %lf\n", tgt_ps->point->x, tgt_ps->point->y, tgt_ps->point->z);
 		real aux_dist = vector3_distance(src_ps->point, tgt_ps->point);
 		if (aux_dist <= max_dist) {
 			cloud_insert_vector3(nsrc, src_ps->point);
