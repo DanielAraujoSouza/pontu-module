@@ -1,6 +1,6 @@
 #include "../../include/module/common.h"
 
-void check_status(napi_env env, napi_status status, char *msg) {
+void check_status(napi_env env, napi_status status, const char *msg) {
   if (status != napi_ok) {
     napi_throw_error(env, NULL, msg);
   }
@@ -18,7 +18,7 @@ void throw_type_error(napi_env env, napi_value value, napi_valuetype expected_ty
   }
 }
 
-void export_function(napi_env env, napi_value exports, char *name, void *method) {
+void export_function(napi_env env, napi_value exports, const char *name, void *method) {
   napi_status status;
   napi_value fn;
   
@@ -29,18 +29,14 @@ void export_function(napi_env env, napi_value exports, char *name, void *method)
   check_status(env, status, "Unable to populate exports!");
 }
 
-char *to_lower(char *str) {
-    size_t len = strlen(str);
-    char *str_l = malloc(sizeof(char)*(len+1));
-
-    for (size_t i = 0; i < len; ++i) {
-        str_l[i] = tolower((unsigned char)str[i]);
-    }
-    return str_l;
+void to_lower(char *str) {
+  for(int i = 0; str[i]; i++){
+    str[i] = tolower(str[i]);
+  }
 }
 
-char *file_ext(char *filename) {
-    char *dot = strrchr(filename, '.');
-    if(!dot || dot == filename) return "";
-    return to_lower(dot + 1);
+const char *file_ext(const char *filename) {
+  const char *dot = strrchr(filename, '.');
+  if(!dot || dot == filename) return "";
+  return dot + 1;
 }
