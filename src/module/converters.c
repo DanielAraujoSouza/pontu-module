@@ -1,6 +1,7 @@
 #include "../../include/module/converters.h"
 
-struct vector3 *napi_object_to_pontu_vector3(napi_env env, napi_value point) {
+struct vector3 *napi_object_to_pontu_vector3(napi_env env, napi_value point)
+{
   napi_status status;
   napi_value x, y, z;
   real x_real, y_real, z_real;
@@ -26,7 +27,8 @@ struct vector3 *napi_object_to_pontu_vector3(napi_env env, napi_value point) {
   return vector3_new(x_real, y_real, z_real);
 }
 
-napi_value pontu_vector3_to_napi_object (napi_env env, struct vector3 *point) {
+napi_value pontu_vector3_to_napi_object(napi_env env, struct vector3 *point)
+{
   napi_status status;
   napi_value point_obj, x, y, z;
 
@@ -54,7 +56,8 @@ napi_value pontu_vector3_to_napi_object (napi_env env, struct vector3 *point) {
   return point_obj;
 }
 
-struct cloud *napi_object_to_pontu_cloud (napi_env env, napi_value cloud) {
+struct cloud *napi_object_to_pontu_cloud(napi_env env, napi_value cloud)
+{
   struct cloud *new_cloud = cloud_new();
 
   napi_status status;
@@ -67,7 +70,8 @@ struct cloud *napi_object_to_pontu_cloud (napi_env env, napi_value cloud) {
   status = napi_get_array_length(env, points, &points_len);
   check_status(env, status, "Failed to load points array length!");
 
-  for (uint32_t i = 0; i < points_len; i++) {
+  for (uint32_t i = 0; i < points_len; i++)
+  {
     napi_value point;
 
     status = napi_get_element(env, points, i, &point);
@@ -79,7 +83,8 @@ struct cloud *napi_object_to_pontu_cloud (napi_env env, napi_value cloud) {
   return new_cloud;
 }
 
-napi_value pontu_cloud_to_napi_object(napi_env env, struct cloud *cloud) {
+napi_value pontu_cloud_to_napi_object(napi_env env, struct cloud *cloud)
+{
   napi_status status;
   napi_value cloud_obj, num_pts;
 
@@ -98,7 +103,8 @@ napi_value pontu_cloud_to_napi_object(napi_env env, struct cloud *cloud) {
   return cloud_obj;
 }
 
-napi_value pontu_pointset_to_napi_array(napi_env env, struct pointset *point_set) {
+napi_value pontu_pointset_to_napi_array(napi_env env, struct pointset *point_set)
+{
   napi_status status;
   napi_value points;
   uint numpts = pointset_size(point_set);
@@ -107,15 +113,21 @@ napi_value pontu_pointset_to_napi_array(napi_env env, struct pointset *point_set
   status = napi_create_array_with_length(env, numpts, &points);
   check_status(env, status, "Failed to create points array!");
 
-  for (struct pointset *e = point_set; e != NULL; e = e->next) {
-    status = napi_set_element(env, points, i++, pontu_vector3_to_napi_object(env, e->point));
-    check_status(env, status, "Failed to set point object!");
+  struct pointset *s = point_set;
+  if (s)
+  {
+    do
+    {
+      status = napi_set_element(env, points, i++, pontu_vector3_to_napi_object(env, s->point));
+      check_status(env, status, "Failed to set point object!");
+      s = s->next;
+    } while (s != NULL && s != point_set);
   }
-
   return points;
 }
 
-struct matrix *napi_array_to_pontu_matrix(napi_env env, napi_value rt) {
+struct matrix *napi_array_to_pontu_matrix(napi_env env, napi_value rt)
+{
   napi_status status;
   uint32_t i_len;
   struct matrix *rt_mat = NULL;
@@ -123,7 +135,8 @@ struct matrix *napi_array_to_pontu_matrix(napi_env env, napi_value rt) {
   status = napi_get_array_length(env, rt, &i_len);
   check_status(env, status, "Failed to get matrix row length!");
 
-  for (uint32_t i = 0; i < i_len; i++) {
+  for (uint32_t i = 0; i < i_len; i++)
+  {
     napi_value row;
     uint32_t j_len;
 
@@ -132,15 +145,18 @@ struct matrix *napi_array_to_pontu_matrix(napi_env env, napi_value rt) {
 
     status = napi_get_array_length(env, row, &j_len);
     check_status(env, status, "Failed to get matrix column length!");
-  
-    if (rt_mat == NULL) {
+
+    if (rt_mat == NULL)
+    {
       rt_mat = matrix_new(1, j_len);
     }
-    else if(matrix_add_row(rt_mat) == 0){
+    else if (matrix_add_row(rt_mat) == 0)
+    {
       napi_throw_error(env, NULL, "Failed to add row to matrix");
     }
 
-    for (uint32_t j = 0; j < j_len; j++) {
+    for (uint32_t j = 0; j < j_len; j++)
+    {
       napi_value num;
 
       status = napi_get_element(env, row, j, &num);
@@ -153,19 +169,22 @@ struct matrix *napi_array_to_pontu_matrix(napi_env env, napi_value rt) {
   return rt_mat;
 }
 
-napi_value pontu_matrix_to_napi_array(napi_env env, struct matrix *mat) {
+napi_value pontu_matrix_to_napi_array(napi_env env, struct matrix *mat)
+{
   napi_status status;
   napi_value m_arr;
 
   status = napi_create_array_with_length(env, mat->rows, &m_arr);
   check_status(env, status, "Failed to create matrix m array!");
 
-  for (uint32_t i = 0; i < mat->rows; i++) {
+  for (uint32_t i = 0; i < mat->rows; i++)
+  {
     napi_value n_arr;
     status = napi_create_array_with_length(env, mat->rows, &n_arr);
     check_status(env, status, "Failed to create matrix n array!");
 
-    for (uint32_t j = 0; j < mat->cols; j++) {
+    for (uint32_t j = 0; j < mat->cols; j++)
+    {
       status = napi_set_element(env, n_arr, j, pontu_cnum_to_napi_object(env, matrix_get(mat, i, j)));
       check_status(env, status, "Failed to set cnum object!");
     }
@@ -177,7 +196,8 @@ napi_value pontu_matrix_to_napi_array(napi_env env, struct matrix *mat) {
   return m_arr;
 }
 
-cnum napi_object_to_pontu_cnum(napi_env env, napi_value num) {
+cnum napi_object_to_pontu_cnum(napi_env env, napi_value num)
+{
   napi_status status;
   napi_value re_nv, im_nv;
   double re, im;
@@ -194,10 +214,11 @@ cnum napi_object_to_pontu_cnum(napi_env env, napi_value num) {
   status = napi_get_value_double(env, im_nv, &im);
   check_status(env, status, "Failed to convert im to double!");
 
-  return re+im*I;
+  return re + im * I;
 }
 
-napi_value pontu_cnum_to_napi_object(napi_env env, cnum num) {
+napi_value pontu_cnum_to_napi_object(napi_env env, cnum num)
+{
   napi_status status;
   napi_value num_obj, re, im;
 

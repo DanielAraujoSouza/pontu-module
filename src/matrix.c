@@ -8,7 +8,7 @@ struct matrix *matrix_new(uint rows, uint cols)
 
 	mat->rows = rows;
 	mat->cols = cols;
-	
+
 	mat->data = malloc(rows * cols * sizeof(cnum));
 	if (mat->data == NULL)
 		return NULL;
@@ -49,7 +49,8 @@ int matrix_add_row(struct matrix *mat)
 {
 	cnum *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(cnum));
 
-	if (row != NULL) {
+	if (row != NULL)
+	{
 		mat->data = row;
 		mat->rows++;
 
@@ -57,7 +58,9 @@ int matrix_add_row(struct matrix *mat)
 			mat->data[((mat->rows - 1) * mat->cols) + j] = 0.0;
 
 		return mat->rows;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
@@ -75,10 +78,10 @@ int matrix_add_col(struct matrix *mat)
 	for (uint i = 0; i < mat->rows; i++)
 		for (uint j = 0; j < mat->cols; j++)
 			new_mat[(i * (mat->cols + 1)) + j] =
-			    mat->data[(i * mat->cols) + j];
+					mat->data[(i * mat->cols) + j];
 
 	free(mat->data);
-	
+
 	mat->data = new_mat;
 	mat->cols++;
 
@@ -87,17 +90,19 @@ int matrix_add_col(struct matrix *mat)
 
 struct matrix *matrix_remove_row(struct matrix *mat, uint row)
 {
-	if (row >= mat->rows) {
+	if (row >= mat->rows)
+	{
 		return NULL;
 	}
 
 	struct matrix *new_mat = matrix_new(mat->rows - 1, mat->cols);
 	if (new_mat == NULL)
 		return NULL;
-	
+
 	uint k = -1;
 
-	for (uint i = 0; i < new_mat->rows; i++) {
+	for (uint i = 0; i < new_mat->rows; i++)
+	{
 		k += row == i ? 2 : 1;
 		for (uint j = 0; j < new_mat->cols; j++)
 			matrix_set(new_mat, i, j, matrix_get(mat, k, j));
@@ -108,19 +113,22 @@ struct matrix *matrix_remove_row(struct matrix *mat, uint row)
 
 struct matrix *matrix_remove_col(struct matrix *mat, uint col)
 {
-	if (col >= mat->cols) {
+	if (col >= mat->cols)
+	{
 		return NULL;
 	}
 
 	struct matrix *new_mat = matrix_new(mat->rows, mat->cols - 1);
 	if (new_mat == NULL)
 		return NULL;
-	
+
 	uint k;
 
-	for (uint i = 0; i < new_mat->rows; i++) {
+	for (uint i = 0; i < new_mat->rows; i++)
+	{
 		k = -1;
-		for (uint j = 0; j < new_mat->cols; j++) {
+		for (uint j = 0; j < new_mat->cols; j++)
+		{
 			k += col == j ? 2 : 1;
 			matrix_set(new_mat, i, j, matrix_get(mat, i, k));
 		}
@@ -131,9 +139,12 @@ struct matrix *matrix_remove_col(struct matrix *mat, uint col)
 
 cnum *matrix_set(struct matrix *mat, uint i, uint j, cnum value)
 {
-	if (i >= mat->rows || j >= mat->cols) {
+	if (i >= mat->rows || j >= mat->cols)
+	{
 		return NULL;
-	} else {
+	}
+	else
+	{
 		mat->data[(i * mat->cols) + j] = value;
 		return &mat->data[(i * mat->cols) + j];
 	}
@@ -192,19 +203,22 @@ struct matrix *matrix_concat_ver(struct matrix *m1, struct matrix *m2)
 }
 
 int matrix_save_to_file(struct matrix *mat,
-                         const char *filename,
-                         const char *m)
+												const char *filename,
+												const char *m)
 {
 	FILE *file = fopen(filename, m);
-	if (file == NULL) {
+	if (file == NULL)
+	{
 		printf("%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
 		return 0;
 	}
 
-	for (uint row = 0; row < mat->rows; row++) {
-		for (uint col = 0; col < mat->cols; col++) {
-			fprintf(file, "%le + (%le * I)", creal(matrix_get(mat, row, col)), 
-                                      cimag(matrix_get(mat, row, col)));
+	for (uint row = 0; row < mat->rows; row++)
+	{
+		for (uint col = 0; col < mat->cols; col++)
+		{
+			fprintf(file, "%le + (%le * I)", creal(matrix_get(mat, row, col)),
+							cimag(matrix_get(mat, row, col)));
 			if (col + 1 < mat->cols)
 				fprintf(file, "%c", ',');
 		}
@@ -219,12 +233,15 @@ int matrix_save_to_file(struct matrix *mat,
 
 int matrix_is_valid(struct matrix *mat)
 {
-	for (uint row = 0; row < mat->rows; row++) {
-		for (uint col = 0; col < mat->cols; col++) {
+	for (uint row = 0; row < mat->rows; row++)
+	{
+		for (uint col = 0; col < mat->cols; col++)
+		{
 			complex mat_el = matrix_get(mat, row, col);
 			if (isnan(creal(mat_el)) ||
-				  isnan(cimag(mat_el))) {
-			    return 0;
+					isnan(cimag(mat_el)))
+			{
+				return 0;
 			}
 		}
 	}
@@ -233,23 +250,29 @@ int matrix_is_valid(struct matrix *mat)
 
 void matrix_debug(struct matrix *mat, FILE *output)
 {
-	if (mat == NULL) {
+	if (mat == NULL)
+	{
 		fprintf(output, "!!! matrix empty !!!\n");
 		return;
 	}
 
-	for (uint i = 0; i < mat->rows; i++) {
-		for (uint j = 0; j < mat->cols; j++) {
-			if (j == mat->cols - 1) {
+	for (uint i = 0; i < mat->rows; i++)
+	{
+		for (uint j = 0; j < mat->cols; j++)
+		{
+			if (j == mat->cols - 1)
+			{
 				fprintf(output,
-				        "%le + (%le * I)",
-				        creal(mat->data[(i * mat->cols) + j]),
-                        cimag(mat->data[(i * mat->cols) + j]));
-			} else {
+								"%le + (%le * I)",
+								creal(mat->data[(i * mat->cols) + j]),
+								cimag(mat->data[(i * mat->cols) + j]));
+			}
+			else
+			{
 				fprintf(output,
-				        "%le + (%le * I), ",
-				        creal(mat->data[(i * mat->cols) + j]),
-                        cimag(mat->data[(i * mat->cols) + j]));
+								"%le + (%le * I), ",
+								creal(mat->data[(i * mat->cols) + j]),
+								cimag(mat->data[(i * mat->cols) + j]));
 			}
 		}
 
@@ -259,21 +282,24 @@ void matrix_debug(struct matrix *mat, FILE *output)
 
 void matrix_debug_real(struct matrix *mat, FILE *output)
 {
-	if (mat == NULL) {
+	if (mat == NULL)
+	{
 		fprintf(output, "!!! matrix empty !!!\n");
 		return;
 	}
 
-	for (uint i = 0; i < mat->rows; i++) {
-		for (uint j = 0; j < mat->cols; j++) {
+	for (uint i = 0; i < mat->rows; i++)
+	{
+		for (uint j = 0; j < mat->cols; j++)
+		{
 			if (j == mat->cols - 1)
 				fprintf(output, "%*lf",
-				        MATRIX_FLOAT_PADDING,
-				        creal(mat->data[(i * mat->cols) + j]));
+								MATRIX_FLOAT_PADDING,
+								creal(mat->data[(i * mat->cols) + j]));
 			else
 				fprintf(output, "%*lf, ",
-				        MATRIX_FLOAT_PADDING,
-				        creal(mat->data[(i * mat->cols) + j]));
+								MATRIX_FLOAT_PADDING,
+								creal(mat->data[(i * mat->cols) + j]));
 		}
 
 		fprintf(output, "\n");

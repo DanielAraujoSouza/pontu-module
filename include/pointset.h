@@ -13,10 +13,11 @@
 /**
  * \brief The pointset data structure (current: double linked-list)
  */
-struct pointset {
-	struct vector3 *point;
-	struct pointset *next;
-	struct pointset *prev;
+struct pointset
+{
+  struct vector3 *point;
+  struct pointset *next;
+  struct pointset *prev;
 };
 
 /**
@@ -31,14 +32,66 @@ struct pointset *pointset_new();
  */
 void pointset_free(struct pointset **set);
 
+// struct vector3 *pointset_insert(struct pointset **set,
+//                                      real x,
+//                                      real y,
+//                                      real z);
+
 /**
- * \brief Inserts a new point into a pointset
+ * \brief Inserts a new point into a pointset (head)
+ * \param set The pointset head address
  * \param x The X coordinate
  * \param y The Y coordinate
  * \param z The Z coordinate
  * \return The address to the newly added point
  */
-struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z);
+struct vector3 *pointset_insert_head(struct pointset **set,
+                                     real x,
+                                     real y,
+                                     real z);
+
+/**
+ * \brief Inserts a new point into a pointset (tail)
+ * \param set The pointset head address
+ * \param x The X coordinate
+ * \param y The Y coordinate
+ * \param z The Z coordinate
+ * \return The address to the newly added point
+ */
+struct vector3 *pointset_insert_tail(struct pointset **set,
+                                     real x,
+                                     real y,
+                                     real z);
+
+/**
+ * \brief Inserts a new point into a pointset after a defined position
+ * \param set The pointset head address
+ * \param i The point index (head is 0)
+ * \param x The X coordinate
+ * \param y The Y coordinate
+ * \param z The Z coordinate
+ * \return The address to the newly added point
+ */
+struct vector3 *pointset_insert_next(struct pointset **set,
+                                     uint i,
+                                     real x,
+                                     real y,
+                                     real z);
+
+/**
+ * \brief Inserts a new point into a pointset before a defined position
+ * \param set The pointset head address
+ * \param i The point index (head is 0)
+ * \param x The X coordinate
+ * \param y The Y coordinate
+ * \param z The Z coordinate
+ * \return The address to the newly added point
+ */
+struct vector3 *pointset_insert_prev(struct pointset **set,
+                                     uint i,
+                                     real x,
+                                     real y,
+                                     real z);
 
 /**
  * \brief Makes a copy of a pointset
@@ -47,12 +100,6 @@ struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z);
  */
 struct pointset *pointset_copy(struct pointset *set);
 
-/**
- * \brief Gets the last element of a pointset
- * \param set The target pointset
- * \return The address to the last element of set
- */
-struct pointset *pointset_tail(struct pointset *set);
 
 /**
  * \brief Creates a pointset from a slice of another
@@ -91,23 +138,12 @@ uint pointset_size(struct pointset *set);
 void pointset_swap(struct vector3 **a, struct vector3 **b);
 
 /**
- * \brief Auxiliary function to slice a pointset (used by the sort function)
- * \param head The begin of a set
- * \param end The element to stop the partition
- * \param axis The axis of partitioning
- * \return A partitioned pointset
- */
-struct pointset *pointset_partition(struct pointset *head,
-                                    struct pointset *end,
-                                    int axis);
-
-/**
  * \brief Auxiliary function to handle the recursive call of sort
  * \param head The begin of a set
- * \param end The element to stop the partition
+ * \param tail The element to stop the partition
  */
 void pointset_recursive_sort(struct pointset *head,
-                             struct pointset *end,
+                             struct pointset *tail,
                              int axis);
 
 /**
@@ -140,4 +176,3 @@ void pointset_debug(struct pointset *set, FILE *output);
 void pointset_debug_reverse(struct pointset *set, FILE *output);
 
 #endif // POINTSET_H
-
