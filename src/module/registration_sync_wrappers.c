@@ -83,5 +83,11 @@ napi_value RegistrationIcpSync(napi_env env, napi_callback_info info)
     check_status(env, status, "Failed to set tm property!");
   }
 
+  cloud_free(&source);
+  cloud_free(&target);
+  cloud_free(&aligned);
+  matrix_free(&tm);
+  free(closest);
+
   return rtn;
 }

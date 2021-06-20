@@ -53,6 +53,9 @@ napi_value CloudSaveSync(napi_env env, napi_callback_info info)
     rtn = pontu_cloud_to_napi_object(env, cloud);
   }
 
+  cloud_free(&cloud);
+  free(filename);
+
   return rtn;
 }
 
@@ -114,6 +117,9 @@ napi_value CloudLoadSync(napi_env env, napi_callback_info info)
     rtn = pontu_cloud_to_napi_object(env, cloud);
   }
 
+  cloud_free(&cloud);
+  free(filename);
+
   return rtn;
 }
 
@@ -163,6 +169,9 @@ napi_value CloudRmseSync(napi_env env, napi_callback_info info)
   status = napi_create_double(env, rmse, &rtn);
   check_status(env, status, "Failed to convert rmse value!");
 
+  cloud_free(&source);
+  cloud_free(&target);
+
   return rtn;
 }
 
@@ -193,6 +202,9 @@ napi_value CloudTransformSync(napi_env env, napi_callback_info info)
   {
     rtn = pontu_cloud_to_napi_object(env, cloud);
   }
+
+  cloud_free(&cloud);
+  matrix_free(&rt);
 
   return rtn;
 }
