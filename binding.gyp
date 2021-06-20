@@ -5,9 +5,11 @@
       'sources': [
         'src/module/addon.c',
         'src/module/cloud_wrappers.c',
+        'src/module/cloud_sync_wrappers.c',
         'src/module/common.c',
         'src/module/converters.c',
         'src/module/registration_wrappers.c',
+        'src/module/registration_sync_wrappers.c',
         'src/algebra.c',
         'src/calc.c',
         'src/chebyshev.c',

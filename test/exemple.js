@@ -1,7 +1,5 @@
 const pontu = require("../lib/binding.js");
 
-//https://threejs.org/editor/js/Viewport.ViewHelper.js
-
 // Configurações do ICP
 const th = 0.000001; // Critérios de parada (erro)
 const k = 10; // Número máximo de iterações
