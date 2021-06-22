@@ -62,7 +62,7 @@ function compareClouds(cloudA, cloudB) {
     if (
       !compareNumber(cloudA.points[i].x, cloudB.points[i].x) ||
       !compareNumber(cloudA.points[i].y, cloudB.points[i].y) ||
-      !compareNumber(cloudA.points[i].y, cloudB.points[i].y)
+      !compareNumber(cloudA.points[i].z, cloudB.points[i].z)
     ) {
       console.log(cloudA.points[i], " != ", cloudB.points[i]);
       return false;

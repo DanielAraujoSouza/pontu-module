@@ -1,7 +1,7 @@
 /**
  * @file common.h
  * @author Daniel Araújo Chaves Souza (daniel_araujo@alu.ufc.br)
- * @brief Funções auxiliares para execução das rotinas do modulo.
+ * @brief Funções auxiliares para execução das rotinas do módulo.
  * @version 0.1
  * @date 2021
  * 
@@ -24,7 +24,7 @@
  * @param status Código de status integral indicando o sucesso ou falha de uma chamada Node-API. 
  * @param msg Mensagem que será apresetada junto a exceção, caso uma seja lançada.
  */
-void check_status(napi_env env, napi_status status, const char* msg);
+void check_status(napi_env env, napi_status status, const char *msg);
 
 /**
  * @brief Verifica se um napi_value corresponde a um determinado napi_valuetype, e lança uma excesão caso
@@ -60,5 +60,27 @@ void to_lower(char *str);
  * @return const char* Extensão do aquivo (char[3]).
  */
 const char *file_ext(const char *filename);
+
+/**
+ * @brief Cria uma promessa para processamento assíncrono.
+ * 
+ * @param env Contexto que a implementação Node-API subjacente pode usar para persistir o estado específico da VM.
+ * @param info Contem informações adicionais sobre o contexto no qual o retorno de chamada foi invocado.
+ * @param deferred 
+ * @param work É o identificador para o processo assíncrono recém-criado que irá fazer o processamento da promessa.
+ * @param addon_data Contexto de dados que será passado de volta para as funções fn_execute e fn_complete.
+ * @param fn_execute A função nativa que deve ser chamada para executar a lógica de forma assíncrona.
+ * @param fn_complete A função nativa que será chamada quando a lógica assíncrona for concluída ou cancelada.
+ * @param promise_name Identificador do tipo de recurso que está sendo fornecido.
+ * @return napi_value Identificador para promessa criada.
+ */
+napi_value create_promise(napi_env env,
+                          napi_callback_info info,
+                          napi_deferred *deferred,
+                          napi_async_work *work,
+                          void *addon_data,
+                          void *fn_execute,
+                          void *fn_complete,
+                          const char *promise_name);
 
 #endif // COMMON_H

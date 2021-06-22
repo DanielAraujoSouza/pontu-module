@@ -67,20 +67,12 @@ static void RegistrationIcpComplete(napi_env env, napi_status status, void *data
   napi_delete_async_work(env, addon_data->work);
   check_status(env, status, "Failed to delete async work!");
 
-  addon_data->work = NULL;
-  addon_data->deferred = NULL;
-  cloud_free(&(addon_data->source));
-  cloud_free(&(addon_data->target));
-  cloud_free(&(addon_data->aligned));
-  matrix_free(&(addon_data->tm));
-  free(addon_data->closest);
-  free(addon_data);
+  FreeRegistrationIcpData(&addon_data);
 }
 
-napi_value RegistrationIcpPromise(napi_env env, napi_callback_info info)
+static RegistrationIcpData *RegistrationIcpFillData(napi_env env, napi_callback_info info)
 {
   napi_status status;
-  napi_value work_name, promise;
 
   RegistrationIcpData *addon_data = (RegistrationIcpData *)malloc(sizeof(*addon_data));
   addon_data->work = NULL;
@@ -118,26 +110,69 @@ napi_value RegistrationIcpPromise(napi_env env, napi_callback_info info)
   status = napi_get_value_string_utf8(env, args[5], addon_data->closest, str_size, NULL);
   check_status(env, status, "Invalid string was passed as sixth argument!");
 
-  status = napi_create_promise(env, &(addon_data->deferred), &promise);
-  check_status(env, status, "Failed to create promise!");
+  return addon_data;
+}
 
-  status = napi_create_string_utf8(env,
-                                   "Node-API Deferred Promise - registration_icp",
-                                   NAPI_AUTO_LENGTH,
-                                   &work_name);
-  check_status(env, status, "Failed to create work name!");
+void FreeRegistrationIcpData(RegistrationIcpData **data)
+{
+  if (*data == NULL)
+    return;
 
-  status = napi_create_async_work(env,
-                                  NULL,
-                                  work_name,
-                                  RegistrationIcpExecute,
-                                  RegistrationIcpComplete,
-                                  addon_data,
-                                  &(addon_data->work));
-  check_status(env, status, "Failed to create async work!");
+  (*data)->work = NULL;
+  (*data)->deferred = NULL;
+  cloud_free(&((*data)->source));
+  cloud_free(&((*data)->target));
+  cloud_free(&((*data)->aligned));
+  matrix_free(&((*data)->tm));
+  free((*data)->closest);
+  free(*data);
+  *data = NULL;
+}
 
-  status = napi_queue_async_work(env, addon_data->work);
-  check_status(env, status, "Failed to queue async work!");
+napi_value RegistrationIcpPromise(napi_env env, napi_callback_info info)
+{
+  RegistrationIcpData *addon_data = RegistrationIcpFillData(env, info);
 
+  napi_value promise = create_promise(env,
+                                      info,
+                                      &(addon_data->deferred),
+                                      &(addon_data->work),
+                                      addon_data,
+                                      RegistrationIcpExecute,
+                                      RegistrationIcpComplete,
+                                      "Node-API Deferred Promise - registration_icp");
   return promise;
+}
+
+napi_value RegistrationIcpSync(napi_env env, napi_callback_info info)
+{
+  napi_status status;
+
+  RegistrationIcpData *addon_data = RegistrationIcpFillData(env, info);
+  RegistrationIcpExecute(env, addon_data);
+
+  napi_value rtn;
+  if (addon_data->tm == NULL)
+  {
+    status = napi_get_null(env, &rtn);
+    check_status(env, status, "Failed get null value!");
+  }
+  else
+  {
+    napi_value rtn_cloud = pontu_cloud_to_napi_object(env, addon_data->aligned);
+    napi_value rtn_tm = pontu_matrix_to_napi_array(env, addon_data->tm);
+
+    status = napi_create_object(env, &rtn);
+    check_status(env, status, "Failed to create result object!");
+
+    status = napi_set_named_property(env, rtn, "algnCloud", rtn_cloud);
+    check_status(env, status, "Failed to set aligned_cloud property!");
+
+    status = napi_set_named_property(env, rtn, "tm", rtn_tm);
+    check_status(env, status, "Failed to set tm property!");
+  }
+
+  FreeRegistrationIcpData(&addon_data);
+
+  return rtn;
 }

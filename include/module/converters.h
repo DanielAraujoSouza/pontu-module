@@ -34,7 +34,7 @@ struct vector3 *napi_object_to_pontu_vector3(napi_env env, napi_value point);
  * @param point Vector3 a ser convertido.
  * @return napi_value 
  */
-napi_value pontu_vector3_to_napi_object (napi_env env, struct vector3 *point);
+napi_value pontu_vector3_to_napi_object(napi_env env, struct vector3 *point);
 
 /**
  * @brief Converte um Napi Object em uma estrutura Cloud.
@@ -43,7 +43,7 @@ napi_value pontu_vector3_to_napi_object (napi_env env, struct vector3 *point);
  * @param cloud Napi Object a ser convertido.
  * @return struct cloud* 
  */
-struct cloud *napi_object_to_pontu_cloud (napi_env env, napi_value cloud);
+struct cloud *napi_object_to_pontu_cloud(napi_env env, napi_value cloud);
 
 /**
  * @brief Converte uma estrutura Cloud em um Napi Object.
@@ -81,6 +81,13 @@ struct matrix *napi_array_to_pontu_matrix(napi_env env, napi_value rt);
  */
 napi_value pontu_matrix_to_napi_array(napi_env env, struct matrix *mat);
 
+/**
+ * @brief Converte um Napi Object para um cnum.
+ * 
+ * @param env Contexto que a implementação Node-API subjacente pode usar para persistir o estado específico da VM.
+ * @param num Objeto que representa um numero complexo {re:double, im:double}
+ * @return cnum 
+ */
 cnum napi_object_to_pontu_cnum(napi_env env, napi_value num);
 
 /**

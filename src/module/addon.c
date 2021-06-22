@@ -1,9 +1,7 @@
 #include <node_api.h>
 #include "../../include/module/common.h"
 #include "../../include/module/cloud_wrappers.h"
-#include "../../include/module/cloud_sync_wrappers.h"
 #include "../../include/module/registration_wrappers.h"
-#include "../../include/module/registration_sync_wrappers.h"
 
 napi_value Init(napi_env env, napi_value exports)
 {
