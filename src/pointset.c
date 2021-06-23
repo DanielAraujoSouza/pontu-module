@@ -9,193 +9,298 @@ void pointset_free(struct pointset **set)
 {
 	if (*set == NULL)
 		return;
-	
+
 	vector3_free(&(*set)->point);
-	pointset_free(&(*set)->next);
-	
+	(*set)->prev->next = NULL;
+	struct pointset *aux = (*set)->next;
 	free(*set);
+	pointset_free(&aux);
+
 	*set = NULL;
 }
 
-struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z)
+struct vector3 *pointset_insert_head(struct pointset **set,
+																		 real x,
+																		 real y,
+																		 real z)
 {
-	// struct pointset *end = pointset_tail(*set);
-	// struct pointset *new = malloc(sizeof(struct pointset));
-	// new->point = vector3_new(x, y, z);
-
-	// if (*set != NULL) {
-	// 	end->next = new;
-	// 	new->prev = end;
-	// }
-	// else {
-	// 	*set = new;
-	// 	new->prev = NULL;
-	// }
-	// new->next = NULL;
-
-	// return new->point;
-	
 	struct pointset *new = malloc(sizeof(struct pointset));
 	if (new == NULL)
 		return NULL;
-	
+
 	new->point = vector3_new(x, y, z);
 	if (new->point == NULL)
+	{
+		free(new);
 		return NULL;
-	
-	new->next = *set;
-	new->prev = NULL;
-	
+	}
+
 	if (*set != NULL)
+	{
+		new->next = *set;
+		new->prev = (*set)->prev;
+
 		(*set)->prev = new;
-	
+		new->prev->next = new;
+	}
+	else
+	{
+		new->next = new;
+		new->prev = new;
+	}
+
 	*set = new;
-	
 	return new->point;
+}
+
+struct vector3 *pointset_insert_tail(struct pointset **set,
+																		 real x,
+																		 real y,
+																		 real z)
+{
+	struct vector3 *v3_ptr = pointset_insert_head(set, x, y, z);
+
+	*set = (*set)->next;
+
+	return v3_ptr;
+}
+
+struct vector3 *pointset_insert_next(struct pointset **set,
+																		 uint i,
+																		 real x,
+																		 real y,
+																		 real z)
+{
+	struct pointset *aux_set = *set;
+	for (uint j = 0; j <= i; j++)
+	{
+		aux_set = aux_set->next;
+	}
+
+	return pointset_insert_head(&aux_set, x, y, z);
+}
+
+struct vector3 *pointset_insert_prev(struct pointset **set,
+																		 uint i,
+																		 real x,
+																		 real y,
+																		 real z)
+{
+	struct pointset *aux_set = *set;
+	for (uint j = 0; j < i; j++)
+	{
+		aux_set = aux_set->next;
+	}
+
+	pointset_insert_head(&aux_set, x, y, z);
+
+	if (aux_set->next == *set)
+	{
+		*set = aux_set;
+	}
+
+	return aux_set->point;
+}
+
+void pointset_debug(struct pointset *set, FILE *output)
+{
+	struct pointset *s = set;
+	if (!s)
+	{
+		fprintf(output, "!!! pointset empty !!!\n");
+		return;
+	}
+	do
+	{
+		vector3_debug(s->point, output);
+		s = s->next;
+	} while (s != NULL && s != set);
+}
+
+void pointset_debug_reverse(struct pointset *set, FILE *output)
+{
+	struct pointset *s = set;
+	if (!s)
+	{
+		fprintf(output, "!!! pointset empty !!!\n");
+		return;
+	}
+	s = s->prev;
+	do
+	{
+		vector3_debug(s->point, output);
+		s = s->prev;
+	} while (s != NULL && s != set->prev);
 }
 
 struct pointset *pointset_copy(struct pointset *set)
 {
 	struct pointset *cpy = pointset_new();
-	
-	for (struct pointset *tmp = set; tmp != NULL; tmp = tmp->next)
-		pointset_insert(&cpy, tmp->point->x, tmp->point->y, tmp->point->z);
-	
+	struct pointset *tmp = set->prev;
+	do
+	{
+		pointset_insert_head(&cpy, tmp->point->x, tmp->point->y, tmp->point->z);
+		tmp = tmp->prev;
+	} while (tmp != NULL && tmp != set->prev);
+
 	return cpy;
 }
 
-struct pointset *pointset_tail(struct pointset *set)
-{
-	struct pointset *temp = set;
-	
-	while (temp != NULL && temp->next != NULL)
-		temp = temp->next;
-	
-	return temp;
-}
-
 struct pointset *pointset_segment(struct pointset *begin,
-                                  struct pointset *end,
-                                  uint *size)
+																	struct pointset *end,
+																	uint *size)
 {
-	struct pointset* segment = pointset_new();
-	
-	for (struct pointset *set = begin; set != end; set = set->next) {
-		pointset_insert(&segment, set->point->x, set->point->y, set->point->z);
-		*size = *size + 1;
+	struct pointset *segment = pointset_new();
+
+	if (begin == end)
+	{
+		pointset_insert_head(&segment,
+												 begin->point->x,
+												 begin->point->y,
+												 begin->point->z);
+		*size = 1;
+		return segment;
 	}
-	
+
+	struct pointset *set = begin;
+	do
+	{
+		pointset_insert_tail(&segment, set->point->x, set->point->y, set->point->z);
+		*size = *size + 1;
+		set = set->next;
+	} while (set != NULL && set != begin && set->prev != end);
+
 	return segment;
 }
 
 struct pointset *pointset_segment_reverse(struct pointset *begin,
-                                          struct pointset *end,
-                                          uint *size)
+																					struct pointset *end,
+																					uint *size)
 {
-	struct pointset* segment = pointset_new();
+	struct pointset *segment = pointset_new();
 	
-	for (struct pointset *set = begin; set != end; set = set->prev) {
-		pointset_insert(&segment, set->point->x, set->point->y, set->point->z);
-		*size = *size + 1;
+	if (begin == end)
+	{
+		pointset_insert_head(&segment,
+												 begin->point->x,
+												 begin->point->y,
+												 begin->point->z);
+		*size = 1;
+		return segment;
 	}
-	
+
+	struct pointset *set = begin;
+	do
+	{
+		pointset_insert_tail(&segment, set->point->x, set->point->y, set->point->z);
+		*size = *size + 1;
+		set = set->prev;
+	} while (set != NULL && set != begin && set->next != end);
+
 	return segment;
 }
 
 uint pointset_size(struct pointset *set)
 {
 	uint size = 0;
-	
-	for (struct pointset *tmp = set; tmp != NULL; tmp = tmp->next)
+
+	struct pointset *s = set;
+	if (!s)	{
+		return size;
+	}
+
+	do {
+		s = s->next;
 		size++;
-	
+	} while (s != NULL && s != set);
+
 	return size;
 }
 
 void pointset_swap(struct vector3 **a, struct vector3 **b)
 {
 	struct vector3 *tmp = *a;
-	
+
 	*a = *b;
 	*b = tmp;
 }
 
-struct pointset *pointset_partition(struct pointset *head,
-                                    struct pointset *end,
-                                    int axis)
-{
-	real x = end->point->coord[axis];
-	
-	struct pointset *i = head->prev;
-	
-	for (struct pointset *j = head; j != end; j = j->next) {
-		if (j->point->coord[axis] <= x) {
-			i = (i == NULL) ? head : i->next;
-			
-			pointset_swap(&(i->point), &(j->point));
-		}
-	}
-	
-	i = (i == NULL) ? head : i->next;
-	pointset_swap(&(i->point), &(end->point));
-	
-	return i;
-}
 
 void pointset_recursive_sort(struct pointset *head,
-                             struct pointset *end,
-                             int axis)
+														 struct pointset *tail,
+														 int axis)
 {
-	if (end != NULL && head != end && head != end->next) {
-		struct pointset *p = pointset_partition(head, end, axis);
-		
-		pointset_recursive_sort(head, p->prev, axis);
-		pointset_recursive_sort(p->next, end, axis);
+	struct pointset *pivot = head;
+	char to_left = 1;
+
+	if (head == NULL || tail == NULL || head == tail) return;
+
+	struct pointset *i = tail;
+
+
+	while (i != pivot) {
+		if (to_left) {
+			if (pivot->point->coord[axis] > i->point->coord[axis]) {
+				pointset_swap(&(pivot->point), &(i->point));
+				struct pointset *aux = pivot->next;
+				pivot = i;
+				i = aux;
+				to_left = 0;
+			}
+			else {
+				i = i->prev;
+			}
+		}
+		else {
+			if (pivot->point->coord[axis] < i->point->coord[axis]) {
+				pointset_swap(&(pivot->point), &(i->point));
+				struct pointset *aux = pivot->prev;
+				pivot = i;
+				i = aux;
+				to_left = 1;
+			}
+			else {
+				i = i->next;
+			}
+		}
+	}
+
+	if (pivot != head) {
+		pointset_recursive_sort(head, pivot->prev, axis);
+	}
+
+	if (pivot != tail) {
+		pointset_recursive_sort(pivot->next, tail, axis);
 	}
 }
 
 void pointset_sort(struct pointset *set, int axis)
 {
-	struct pointset *end = pointset_tail(set);
+	struct pointset *end = set->prev;
 	pointset_recursive_sort(set, end, axis);
 }
 
-struct pointset *pointset_median(struct pointset *set, int axis, uint size)
-{
-	if (set == NULL || size == 0)
-		return NULL;
-	
-	if (size == 1)
-		return set;
-	
-	pointset_sort(set, axis);
-	
-	struct pointset *tmp = set;
-	uint i = 0;
-	uint h = size / 2;
-	
-	do {
-		i++;
-		tmp = tmp->next;
-	} while (tmp != NULL && i < h);
-	
-	if (size % 2 == 0)
-		return tmp->prev;
-	else
-		return tmp;
-}
+// struct pointset *pointset_median(struct pointset *set, int axis, uint size)
+// {
+// 	if (set == NULL || size == 0)
+// 		return NULL;
 
-void pointset_debug(struct pointset *set, FILE *output)
-{
-	for (struct pointset *s = set; s != NULL; s = s->next)
-		vector3_debug(s->point, output);
-}
+// 	if (size == 1)
+// 		return set;
 
-void pointset_debug_reverse(struct pointset *set, FILE *output)
-{
-	struct pointset *tail = pointset_tail(set);
-	
-	for (struct pointset *s = tail; s != NULL; s = s->prev)
-		vector3_debug(s->point, output);
-}
+// 	pointset_sort(set, axis);
 
+// 	struct pointset *tmp = set;
+// 	uint i = 0;
+// 	uint h = size / 2;
+
+// 	do {
+// 		i++;
+// 		tmp = tmp->next;
+// 	} while (tmp != NULL && i < h);
+
+// 	if (size % 2 == 0)
+// 		return tmp->prev;
+// 	else
+// 		return tmp;
+// }

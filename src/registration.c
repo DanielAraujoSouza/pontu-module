@@ -18,62 +18,63 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
 
     struct matrix *centroid_prod = algebra_mat_prod(source_aux, target_aux);
     struct matrix *s = matrix_new(3, 3);
-	
-	struct pointset *src = source->points;
-	struct pointset *tgt = target->points;
-	
-    while (src != NULL && tgt != NULL) {
+
+    struct pointset *src = source->points;
+    struct pointset *tgt = target->points;
+
+    do
+    {
         matrix_set(s, 0, 0,
                    matrix_get(s, 0, 0) +
-                   src->point->x * tgt->point->x - 
-                   matrix_get(centroid_prod, 0, 0));
+                       src->point->x * tgt->point->x -
+                       matrix_get(centroid_prod, 0, 0));
 
         matrix_set(s, 0, 1,
                    matrix_get(s, 0, 1) +
-                   src->point->x * tgt->point->y - 
-                   matrix_get(centroid_prod, 0, 1));
+                       src->point->x * tgt->point->y -
+                       matrix_get(centroid_prod, 0, 1));
 
         matrix_set(s, 0, 2,
                    matrix_get(s, 0, 2) +
-                   src->point->x * tgt->point->z - 
-                   matrix_get(centroid_prod, 0, 2));
+                       src->point->x * tgt->point->z -
+                       matrix_get(centroid_prod, 0, 2));
 
         matrix_set(s, 1, 0,
                    matrix_get(s, 1, 0) +
-                   src->point->y * tgt->point->x - 
-                   matrix_get(centroid_prod, 1, 0));
+                       src->point->y * tgt->point->x -
+                       matrix_get(centroid_prod, 1, 0));
 
         matrix_set(s, 1, 1,
                    matrix_get(s, 1, 1) +
-                   src->point->y * tgt->point->y - 
-                   matrix_get(centroid_prod, 1, 1));
+                       src->point->y * tgt->point->y -
+                       matrix_get(centroid_prod, 1, 1));
 
         matrix_set(s, 1, 2,
                    matrix_get(s, 1, 2) +
-                   src->point->y * tgt->point->z - 
-                   matrix_get(centroid_prod, 1, 2));
+                       src->point->y * tgt->point->z -
+                       matrix_get(centroid_prod, 1, 2));
 
         matrix_set(s, 2, 0,
                    matrix_get(s, 2, 0) +
-                   src->point->z * tgt->point->x - 
-                   matrix_get(centroid_prod, 2, 0));
+                       src->point->z * tgt->point->x -
+                       matrix_get(centroid_prod, 2, 0));
 
         matrix_set(s, 2, 1,
                    matrix_get(s, 2, 1) +
-                   src->point->z * tgt->point->y - 
-                   matrix_get(centroid_prod, 2, 1));
+                       src->point->z * tgt->point->y -
+                       matrix_get(centroid_prod, 2, 1));
 
         matrix_set(s, 2, 2,
                    matrix_get(s, 2, 2) +
-                   src->point->z * tgt->point->z - 
-                   matrix_get(centroid_prod, 2, 2));
-		
-		src = src->next;
-		tgt = tgt->next;
-    }
+                       src->point->z * tgt->point->z -
+                       matrix_get(centroid_prod, 2, 2));
 
-    s = algebra_mat_vs_scalar(s, 1.0/((double)source->numpts));
-    
+        src = src->next;
+        tgt = tgt->next;
+    } while (src != source->points && tgt != target->points);
+
+    s = algebra_mat_vs_scalar(s, 1.0 / ((double)source->numpts));
+
     struct matrix *a = algebra_mat_sub(s, algebra_mat_transpose(s));
     struct matrix *q = matrix_new(4, 4);
 
@@ -104,8 +105,10 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
 
     uint max_eig_idx = 0;
     real eig_aux = creal(matrix_get(eig_val, 0, 0));
-    for (uint i = 0; i < eig_val->rows; i++) {
-        if (eig_aux < creal(matrix_get(eig_val, i, 0))) {
+    for (uint i = 0; i < eig_val->rows; i++)
+    {
+        if (eig_aux < creal(matrix_get(eig_val, i, 0)))
+        {
             eig_aux = creal(matrix_get(eig_val, i, 0));
             max_eig_idx = i;
         }
@@ -142,7 +145,7 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
     matrix_set(target_aux, 2, 0, target->centroid->z);
 
     struct matrix *t = algebra_mat_sub(target_aux,
-                                        algebra_mat_prod(r, source_aux));
+                                       algebra_mat_prod(r, source_aux));
     struct matrix *rt = matrix_new(4, 4);
 
     matrix_set(rt, 0, 0, creal(matrix_get(r, 0, 0)));
@@ -164,7 +167,6 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
     matrix_set(rt, 3, 2, 0.0);
     matrix_set(rt, 3, 3, 1.0);
 
-
     matrix_free(&t);
     matrix_free(&target_aux);
     matrix_free(&source_aux);
@@ -176,20 +178,21 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
     matrix_free(&s);
     matrix_free(&centroid_prod);
 
-    if (!matrix_is_valid(rt)) {
+    if (!matrix_is_valid(rt))
+    {
         return NULL;
     }
 
     return rt;
 }
 
-struct matrix *registration_icp (struct cloud *source,
-                                 struct cloud *target,
-                                 struct cloud **aligned,
-                                 real th,
-                                 uint k,
-                                 real max_dist,
-                                 closest_points_func closest)
+struct matrix *registration_icp(struct cloud *source,
+                                struct cloud *target,
+                                struct cloud **aligned,
+                                real th,
+                                uint k,
+                                real max_dist,
+                                closest_points_func closest)
 {
     real cur_rmse;
     real last_rmse = INFINITY;
@@ -198,15 +201,23 @@ struct matrix *registration_icp (struct cloud *source,
     uint i = 0;
     struct cloud *src;
     struct cloud *tgt;
-    struct matrix *rt_final;
+    struct matrix *rt_final = matrix_new(4, 4);
+    matrix_set(rt_final, 0, 0, 1.0);
+    matrix_set(rt_final, 1, 1, 1.0);
+    matrix_set(rt_final, 2, 2, 1.0);
+    matrix_set(rt_final, 3, 3, 1.0);
 
     *aligned = cloud_copy(source);
 
-    do {
-        if (cloud_size(*aligned) < cloud_size(target)) {
+    do
+    {
+        if (cloud_size(*aligned) < cloud_size(target))
+        {
             src = cloud_copy(*aligned);
             tgt = closest(src, target);
-        } else {
+        }
+        else
+        {
             tgt = cloud_copy(target);
             src = closest(tgt, *aligned);
         }
@@ -217,9 +228,11 @@ struct matrix *registration_icp (struct cloud *source,
         struct cloud *nsrc = cloud_new();
         struct cloud *ntgt = cloud_new();
 
-        for (uint j = 0; j < cloud_size(src); j++) {
+        for (uint j = 0; j < cloud_size(src); j++)
+        {
             real aux_dist = vector3_distance(src_ps->point, tgt_ps->point);
-            if (aux_dist <= max_dist) {
+            if (aux_dist <= max_dist)
+            {
                 cloud_insert_vector3(nsrc, src_ps->point);
                 cloud_insert_vector3(ntgt, tgt_ps->point);
             }
@@ -230,9 +243,10 @@ struct matrix *registration_icp (struct cloud *source,
 
         cloud_free(&src);
         cloud_free(&tgt);
-        
+
         if ((4 > cloud_size(nsrc)) ||
-            (4 > cloud_size(ntgt))) {
+            (4 > cloud_size(ntgt)))
+        {
             cloud_free(&nsrc);
             cloud_free(&ntgt);
             cloud_free(aligned);
@@ -246,51 +260,60 @@ struct matrix *registration_icp (struct cloud *source,
 
         cur_rmse = cloud_rmse_sorted(src, tgt);
         printf("LAST RMSE: %lf, RMSE: %lf\n", last_rmse, cur_rmse);
-        if (i == 0) {
-            if (i == k) {
+        if (i == 0)
+        {
+            if (i == k)
+            {
                 break;
-            } else {
+            }
+            else
+            {
                 i++;
             }
-        } else {
+        }
+        else
+        {
             rmse_diff = last_rmse - cur_rmse;
             printf("DELTA: %lf\n", rmse_diff);
-            if (rmse_diff <= th) {
+            if (rmse_diff <= th)
+            {
                 conv = 1;
             }
 
-            if (conv || i == k || rmse_diff <= 0.0) {
+            if (conv || i == k || rmse_diff <= 0.0)
+            {
                 break;
-            } else {
+            }
+            else
+            {
                 i++;
             }
         }
 
         last_rmse = cur_rmse;
-        
+
         struct matrix *rt = registration_align(src, tgt);
-        if (rt == NULL) {
+        if (rt == NULL)
+        {
             break;
         }
 
-        if (i == 1) {
-            rt_final = matrix_copy(rt);
-        } else {
-            struct matrix *aux = algebra_mat_prod(rt, rt_final);
-            matrix_free(&rt_final);
-            rt_final = aux;
-        }
+        struct matrix *aux = algebra_mat_prod(rt, rt_final);
+        matrix_free(&rt_final);
+        rt_final = aux;
 
         cloud_transform(*aligned, rt);
 
         matrix_free(&rt);
     } while (1);
 
-    if (src != NULL) {
+    if (src != NULL)
+    {
         cloud_free(&src);
     }
 
-    if (tgt != NULL) {
+    if (tgt != NULL)
+    {
         cloud_free(&tgt);
     }
 
@@ -298,7 +321,7 @@ struct matrix *registration_icp (struct cloud *source,
            i,
            cur_rmse,
            rmse_diff,
-           conv? "true":"false");
+           conv ? "true" : "false");
 
     return rt_final;
 }
