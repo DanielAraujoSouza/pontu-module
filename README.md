@@ -2,6 +2,30 @@
 
 Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens de pontos 3D, desenvolvida em **C**, ao ambiente javascript **Node.JS**. Esse módulo é desenvolvido a partir da API de desenvolvimento de complementos nativos do projeto Node.JS, [Node-addon-api](https://github.com/nodejs/node-addon-api). Com o módulo Pontu é possivel realiza a manipulação e processamento de nuvens de pontos 3D de forma facil sem abrir mão do desempenho proporcionado por uma linguagem de programação de baixo nível.
 
+## Índice
+
+- [Dependências](#dependências)
+- [Instalação](#instalação)
+- [Testes](#testes)
+- [Uso](#uso)
+- [Pontu API](#pontu-api)
+  - [cloud_load](#cloud_load)
+  - [cloud_load_sync](#cloud_load_sync)
+  - [cloud_rmse](#cloud_rmse)
+  - [cloud_rmse_sync](#cloud_rmse_sync)
+  - [cloud_save](#cloud_save)
+  - [cloud_save_sync](#cloud_save_sync)
+  - [cloud_transform](#cloud_transform)
+  - [cloud_transform_sync](#cloud_transform_sync)
+  - [registration_icp](#registration_icp)
+  - [registration_icp_sync](#registration_icp_sync)
+- [Exemplos](#exemplos)
+  - [Assíncrono](#assíncrono)
+  - [Síncrono](#síncrono)
+- [Tipos de Dados](#tipos-de-dados)
+  - [Cloud OBJ](#cloud-obj)
+  - [Matrix4](#matrix4)
+
 ## Dependências
 
 - Uma versão do [Node.js](https://nodejs.org/) instalada;
