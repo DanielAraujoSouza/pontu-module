@@ -1,6 +1,6 @@
 # Módulo Pontu - Node.Js
 
-Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens de pontos 3D, desenvolvida em **C**, ao ambiente javascript **Node.JS**. Esse módulo é desenvolvido a partir da API de desenvolvimento de complementos nativos do projeto Node.JS, [Node-addon-api](https://github.com/nodejs/node-addon-api). Com o módulo Pontu é possivel realiza a manipulação e processamento de nuvens de pontos 3D de forma facil sem abrir mão do desempenho proporcionado por uma linguagem de programação de baixo nível.
+Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens de pontos 3D, desenvolvida em **C**, ao ambiente javascript **Node.JS**. Esse módulo é desenvolvido a partir da API de desenvolvimento de complementos nativos do projeto Node.JS, [node-addon-api](https://github.com/nodejs/node-addon-api). Com o módulo Pontu é possivel realiza a manipulação e processamento de nuvens de pontos 3D de forma fácil sem abrir mão do desempenho proporcionado por uma linguagem de programação de baixo nível.
 
 ## Índice
 
@@ -34,9 +34,9 @@ Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens 
 
 ## Instalação
 
-> **OBS:** Se ainda não tiver o Node.JS [faça o download e instale](https://nodejs.org/en/download/).
+> **OBS:** Se ainda não possuir nenhum versão do Node.JS [faça o download e instale](https://nodejs.org/en/download/).
 
-Em seguida faça o download desse projeto, acesse o diretório do projeto a partir do terminal e execute o comando abaixo para instalar o módulo **node-gyp**, responsavel por compilar o módulo nativo, de forma global.
+Em seguida faça o download desse projeto, acesse o diretório do projeto a partir do terminal e execute o comando abaixo para instalar o módulo **node-gyp**, responsável por compilar o módulo nativo, de forma global.
 
 ```bash
 npm install -g node-gyp
@@ -50,7 +50,7 @@ npm install
 
 ## Testes
 
-Para executar o conjunto de testes, após ter realizado a intalação, execute `npm test`:
+Para executar o conjunto de testes, após ter realizado a instalação, execute `npm test`:
 
 ```bash
 npm test
@@ -58,7 +58,7 @@ npm test
 
 ## Uso
 
-Como atualmenteo o módulo ainda não está disponivel no NPM, a maneira mais facil de intancia-lo em seu projeto é por meio de uma intalação NPM usando diretório local. Para isso, execute o `npm intall <folder>`, onde `<folder>` é o caminho para o diretório onde econtra-se o módulo Pontu. Por exemplo, se o módulo estiver no mesmo nível de diretório que seu projeto, bastaria executar dentro do diretório do seu projeto:
+Como atualmente o módulo ainda não está disponivel no NPM, a maneira mais facil de intancia-lo em seu projeto é por meio de uma instalação NPM usando diretório local. Para isso, execute o `npm intall <folder>`, onde `<folder>` é o caminho para o diretório onde econtra-se o módulo Pontu. Por exemplo, se o módulo estiver no mesmo nível de diretório que seu projeto, bastaria executar dentro do diretório do seu projeto:
 
 ```bash
 npm install ../pontu-module
@@ -74,7 +74,7 @@ const src = pontu.cloud_load_sync("mycloud.pcd");
 
 ## Pontu API
 
-As funções assíncronas do módulo **Pontu** são baseadas em [Javascript Promises](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Promise), podendo ser facilmente encadeadas ou executadas em paralelo. Esse módulo também possui funções síncronas para todas os métodos.
+As funções assíncronas do módulo **Pontu** são baseadas em [Javascript Promises](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Promise), podendo ser facilmente encadeadas ou executadas em paralelo. Esse módulo também possui funções síncronas para todos os métodos.
 
 ### cloud_load
 
@@ -87,7 +87,7 @@ pontu.cloud_load(filename)
   })
 ```
 
-- **[IN] filename** - Path para o arquivo de entrada (String).
+- **[IN] filename** - Path para o arquivo de entrada ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)).
 - **[OUT] cloudObj** - Objeto contendo o número de pontos e um vetor de coordenadas dos pontos ([Cloud OBJ](#cloud-obj)).
 
 ### cloud_load_sync
@@ -98,7 +98,7 @@ Método para carregar arquivos de nuvem de pontos (**csv**, **obj**, **pcd**, **
 const cloudObj = pontu.cloud_load(filename);
 ```
 
-- **[IN] filename** - Path para o arquivo de entrada (String).
+- **[IN] filename** - Path para o arquivo de entrada ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)).
 - **[OUT] cloudObj** - Objeto contendo o número de pontos e um vetor de coordenadas dos pontos ([Cloud OBJ](#cloud-obj)).
 
 ### cloud_rmse
@@ -114,11 +114,11 @@ pontu.cloud_rmse(srcCloud, tgtCloud, max_dist, closest_type)
 
 - **[IN] srcCloud** - Objeto correspondente a nuvem _source_ ([Cloud OBJ](#cloud-obj)).
 - **[IN] tgtCloud** - Objeto correspondente a nuvem _target_ ([Cloud OBJ](#cloud-obj)).
-- **[IN] max_dist** - Distancia maxima entre pontos (Number).
-- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos (String).
-  - `"bf"` - Parea os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
-  - `"tree"` - Parea os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
-- **[OUT] rmse** - Valor de RMSE calculado (Number)
+- **[IN] max_dist** - Distancia máxima entre pontos ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)).
+- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)).
+  - `"bf"` - Pareia os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
+  - `"tree"` - Pareia os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
+- **[OUT] rmse** - Valor de RMSE calculado ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number))
 
 ### cloud_rmse_sync
 
@@ -130,11 +130,11 @@ const rmse = pontu.cloud_rmse(srcCloud, tgtCloud, max_dist, closest_type);
 
 - **[IN] srcCloud** - Objeto correspondente a nuvem _source_ ([Cloud OBJ](#cloud-obj)).
 - **[IN] tgtCloud** - Objeto correspondente a nuvem _target_ ([Cloud OBJ](#cloud-obj)).
-- **[IN] max_dist** - Distancia maxima entre pontos (Number).
-- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos (String).
-  - `"bf"` - Parea os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
-  - `"tree"` - Parea os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
-- **[OUT] rmse** - Valor de RMSE calculado (Number)
+- **[IN] max_dist** - Distancia máxima entre pontos ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)).
+- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)).
+  - `"bf"` - Pareia os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
+  - `"tree"` - Pareia os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
+- **[OUT] rmse** - Valor de RMSE calculado ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number))
 
 ### cloud_save
 
@@ -148,7 +148,7 @@ pontu.cloud_save(cloudObj, filename)
 ```
 
 - **[IN] cloudObj** - Objeto correspondente a nuvem de pontos que será salva ([Cloud OBJ](#cloud-obj)).
-- **[IN] filename** - Nome do arquivo que será criado (String). A extensão do arquivo determinará em qual formato a nuvem será salva (Ex.: `"/home/user/myCloud.pcd"`, `"/home/user/myCloud.ply"`).
+- **[IN] filename** - Nome do arquivo que será criado ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)). A extensão do arquivo determinará em qual formato a nuvem será salva (Ex.: `"/home/user/myCloud.pcd"`, `"/home/user/myCloud.ply"`).
 - **[OUT] salvedCloud** - Objeto correspondente a nuvem salva ([Cloud OBJ](#cloud-obj)).
 
 ### cloud_save_sync
@@ -160,7 +160,7 @@ const saveResult = pontu.cloud_save_sync(cloudObj, filename);
 ```
 
 - **[IN] cloudObj** - Objeto correspondente a nuvem de pontos que será salva ([Cloud OBJ](#cloud-obj)).
-- **[IN] filename** - Nome do arquivo que será criado (String). A extensão do arquivo determinará em qual formato a nuvem será salva (Ex.: `"/home/user/myCloud.pcd"`, `"/home/user/myCloud.ply"`).
+- **[IN] filename** - Nome do arquivo que será criado ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)). A extensão do arquivo determinará em qual formato a nuvem será salva (Ex.: `"/home/user/myCloud.pcd"`, `"/home/user/myCloud.ply"`).
 - **[OUT] salvedCloud** - Retorna um boleano (Boolean) informando se operação foi realizada (true: nuvem salva; false: nuvem não foi salva).
 
 ### cloud_transform
@@ -203,12 +203,12 @@ pontu.registration_icp(srcCloud, tgtCloud, th, k, max_dist, closest_type)
 
 - **[IN] srcCloud** - Objeto correspondente a nuvem que será alinhada ([Cloud OBJ](#cloud-obj)).
 - **[IN] tgtCloud** - Objeto correspondente a nuvem referência para o alinhamento ([Cloud OBJ](#cloud-obj)).
-- **[IN] th** - Critério de parada, limiar de erro (Number).
-- **[IN] k** - Quantidade máxima de iterações (Number).
-- **[IN] max_dist** - Distância máxima entre pontos (Number). Os pares de pontos com distância superior a esse valor serão ignorados para o calculo do ICP.
-- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos (String).
-  - `"bf"` - Parea os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
-  - `"tree"` - Parea os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
+- **[IN] th** - Critério de parada, limiar de erro ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)).
+- **[IN] k** - Quantidade máxima de iterações ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)).
+- **[IN] max_dist** - Distância máxima entre pontos ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)). Os pares de pontos com distância superior a esse valor serão ignorados para o calculo do ICP.
+- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)).
+  - `"bf"` - Pareia os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
+  - `"tree"` - Pareia os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
 - **[OUT] icpRes** - Resultado do obtido no alinhamento (Object).
   - `icpRes.tm` - Matrix de transformação calculada pelo algoritmo ([Matrix4](#matrix4)).
   - `icpRes.algnCloud` - Objeto a nuvem _source_ alinhada ([Cloud OBJ](#cloud-obj)).
@@ -230,12 +230,12 @@ const icpRes = pontu.registration_icp_sync(
 
 - **[IN] srcCloud** - Objeto correspondente a nuvem que será alinhada ([Cloud OBJ](#cloud-obj)).
 - **[IN] tgtCloud** - Objeto correspondente a nuvem referência para o alinhamento ([Cloud OBJ](#cloud-obj)).
-- **[IN] th** - Critério de parada, limiar de erro (Number).
-- **[IN] k** - Quantidade máxima de iterações (Number).
-- **[IN] max_dist** - Distância máxima entre pontos (Number). Os pares de pontos com distância superior a esse valor serão ignorados para o calculo do ICP.
-- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos (String).
-  - `"bf"` - Parea os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
-  - `"tree"` - Parea os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
+- **[IN] th** - Critério de parada, limiar de erro ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)).
+- **[IN] k** - Quantidade máxima de iterações ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)).
+- **[IN] max_dist** - Distância máxima entre pontos ([Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)). Os pares de pontos com distância superior a esse valor serão ignorados para o calculo do ICP.
+- **[IN] closest_type** - Tipo de algoritmo utilizado para o pareamento dos pontos ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)).
+  - `"bf"` - Pareia os pontos utilizando operações algébricas. Mais preciso e lento (_brute force_).
+  - `"tree"` - Pareia os pontos utilizando operações em árvore. Menos preciso e mais rápido (usando árvore).
 - **[OUT] icpRes** - Resultado do obtido no alinhamento (Object).
   - `icpRes.tm` - Matrix de transformação calculada pelo algoritmo ([Matrix4](#matrix4)).
   - `icpRes.algnCloud` - Objeto a nuvem _source_ alinhada ([Cloud OBJ](#cloud-obj)).
