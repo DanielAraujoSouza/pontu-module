@@ -4,16 +4,14 @@ const pontu = require("../lib/binding.js");
 const th = 0.000001; // Critérios de parada (erro)
 const k = 10; // Número máximo de iterações
 const max_dist = 4000; // Distância máxima entre pontos
-const closestType = "bf"; // Closest points call back
+const closestType = "bf"; // Algorimo de pareamento
 
-///////// SYNC
-console.log("Carregando as nuvens...");
-const src = pontu.cloud_load_sync("./test/clouds/bun0_RY50.pcd");
-const tgt = pontu.cloud_load_sync("./test/clouds/bun0.pcd");
+console.log("Carregando nuvens...");
+const src = pontu.cloud_load_sync("./test/clouds/bun01.pcd"); // Nuvem que será corrigida
+const tgt = pontu.cloud_load_sync("./test/clouds/bun0.pcd"); // Nuvem referência
 
-console.log(`Src: ${src.numpts} Pts; Tgt: ${tgt.numpts} Pts;`);
-
-console.log("Executando ICP...");
+// Executa o ICP
+console.log("Nuvens carregadas. Iniciando ICP...");
 const icpRes = pontu.registration_icp_sync(
   src,
   tgt,
@@ -23,13 +21,23 @@ const icpRes = pontu.registration_icp_sync(
   closestType
 );
 
-console.log("Calculando RMSE...");
-const rmse = pontu.cloud_rmse_sync(icpRes.algnCloud, tgt, max_dist, "bf");
-console.log(`RMSE: ${rmse}`);
-
-console.log("Transformando SRC...");
+// Aplica a matrix de transformação obtida no alinhamento
+console.log("ICP Finalizado. Iniciando Alinhamento...");
 const aligned = pontu.cloud_transform_sync(src, icpRes.tm);
 
-console.log("Calculando RMSE...");
-const rmseTrans = pontu.cloud_rmse_sync(icpRes.algnCloud, tgt, max_dist, "bf");
-console.log(`RMSE Trans: ${rmseTrans}`);
+// Salva a nuvem transformada em um arquivo
+console.log("Alinhamento Finalizado. Iniciando Salvamento...");
+const salveRes = pontu.cloud_save_sync(aligned, "./test/clouds/bun10.pcd");
+console.log(
+  `Nuvem de pontos ${salveRes ? "salva corretamente" : "não foi salva"}.`
+);
+
+// Calcula o RMSE entre a nuvem transformada e nuvem referência
+console.log("Salvamento Finalizado. Calculando RMSE...");
+const rmse = pontu.cloud_rmse_sync(aligned, tgt, max_dist, closestType);
+
+// Imprime os resultados obtidos
+console.log("Resultados Obtidos");
+console.log("- Matriz Transformação: ", icpRes.tm);
+console.log("- RMSE: ", rmse);
+console.log("- Nuvem Alinhada: ", aligned);

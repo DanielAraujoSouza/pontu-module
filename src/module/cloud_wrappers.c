@@ -127,12 +127,13 @@ napi_value CloudSaveSync(napi_env env, napi_callback_info info)
   napi_value rtn;
   if (addon_data->cloud == NULL)
   {
-    status = napi_get_null(env, &rtn);
-    check_status(env, status, "Failed get null value!");
+    status = napi_get_boolean(env, false, &rtn);
+    check_status(env, status, "Failed get boolean value!");
   }
   else
   {
-    rtn = pontu_cloud_to_napi_object(env, addon_data->cloud);
+    status = napi_get_boolean(env, true, &rtn);
+    check_status(env, status, "Failed get boolean value!");
   }
 
   FreeCloudSaveData(&addon_data);
