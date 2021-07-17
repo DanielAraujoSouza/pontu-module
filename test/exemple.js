@@ -1,18 +1,18 @@
-const pontu = require("../lib/binding.js");
+const pontu = require('../lib/binding.js')
 
 // Configurações do ICP
-const th = 0.000001; // Critérios de parada (erro)
-const k = 10; // Número máximo de iterações
-const max_dist = 4000; // Distância máxima entre pontos
-const closestType = "bf"; // Closest points call back
+const th = 0.000001 // Critérios de parada (erro)
+const k = 10 // Número máximo de iterações
+const max_dist = 4000 // Distância máxima entre pontos
+const closestType = 'bf' // Closest points call back
 
-console.log("Carregando nuvens...");
-const srcPromise = pontu.cloud_load("./test/clouds/bun01.pcd"); // A que sera corrigida
+console.log('Carregando nuvens...')
+const srcPromise = pontu.cloud_load('./test/clouds/bun01.pcd') // A que sera corrigida
 // .then(cloud => pontu.cloud_save(cloud, "./test/clouds/bun01.csv"))
 // .then(cloud => pontu.cloud_save(cloud, "./test/clouds/bun01.ply"))
 // .then(cloud => pontu.cloud_save(cloud, "./test/clouds/bun01.xyz"))
 
-const tgtPromise = pontu.cloud_load("./test/clouds/bun0.pcd");
+//const tgtPromise = pontu.cloud_load("./test/clouds/bun0.pcd");
 // .then(cloud => pontu.cloud_save(cloud, "./test/clouds/bun02.csv"))
 // .then(cloud => pontu.cloud_save(cloud, "./test/clouds/bun02.ply"))
 // .then(cloud => pontu.cloud_save(cloud, "./test/clouds/bun02.xyz"))
@@ -61,64 +61,64 @@ const tgtPromise = pontu.cloud_load("./test/clouds/bun0.pcd");
 //   //console.log("- Nuvem Alinhada: ", aligned)
 // })
 
-// ICP
+// // ICP
 
-const regPromise = Promise.all([srcPromise, tgtPromise])
-  .then(([source, target]) => {
-    console.log("Nuvens carregadas. Iniciando ICP...");
-    return pontu.registration_icp(source, target, th, k, max_dist, closestType);
-  })
-  .then((icpRes) => {
-    console.log("Icp Calculado!");
-    return icpRes.algnCloud;
-  });
-
-// // RMSE;
-
-Promise.all([regPromise, tgtPromise])
-  .then(([src, tgt]) => {
-    console.log("Calculando RMSE...");
-    return pontu.cloud_rmse(src, tgt, max_dist, "bf");
-  })
-  .then((rmse) => {
-    console.log("- RMSE: ", rmse);
-  });
-
-// // TRANSFORM
-// const tm = [
-//   [
-//     { re: Math.cos((50 * Math.PI) / 180), im: 0 },
-//     { re: 0, im: 0 },
-//     { re: Math.sin((50 * Math.PI) / 180), im: 0 },
-//     { re: 0, im: 0 },
-//   ],
-//   [
-//     { re: 0, im: 0 },
-//     { re: 1, im: 0 },
-//     { re: 0, im: 0 },
-//     { re: 0, im: 0 },
-//   ],
-//   [
-//     { re: -Math.sin((50 * Math.PI) / 180), im: 0 },
-//     { re: 0, im: 0 },
-//     { re: Math.cos((50 * Math.PI) / 180), im: 0 },
-//     { re: 0, im: 0 },
-//   ],
-//   [
-//     { re: 0, im: 0 },
-//     { re: 0, im: 0 },
-//     { re: 0, im: 0 },
-//     { re: 1, im: 0 },
-//   ],
-// ];
-
-// srcPromise
-//   .then((cloud) => {
-//     console.log(cloud);
-//     return cloud;
+// const regPromise = Promise.all([srcPromise, tgtPromise])
+//   .then(([source, target]) => {
+//     console.log("Nuvens carregadas. Iniciando ICP...");
+//     return pontu.registration_icp(source, target, th, k, max_dist, closestType);
 //   })
-//   .then((src) => pontu.cloud_transform(src, tm))
-//   .then((cloud) => pontu.cloud_save(cloud, "./test/clouds/bun0_d.pcd"))
-//   .then((cloud) => {
-//     console.log(cloud);
+//   .then((icpRes) => {
+//     console.log("Icp Calculado!");
+//     return icpRes.algnCloud;
 //   });
+
+// // // RMSE;
+
+// Promise.all([regPromise, tgtPromise])
+//   .then(([src, tgt]) => {
+//     console.log("Calculando RMSE...");
+//     return pontu.cloud_rmse(src, tgt, max_dist, "bf");
+//   })
+//   .then((rmse) => {
+//     console.log("- RMSE: ", rmse);
+//   });
+
+// TRANSFORM
+const tm = [
+  [
+    { re: Math.cos((50 * Math.PI) / 180), im: 0 },
+    { re: 0, im: 0 },
+    { re: Math.sin((50 * Math.PI) / 180), im: 0 },
+    { re: 0, im: 0 },
+  ],
+  [
+    { re: 0, im: 0 },
+    { re: 1, im: 0 },
+    { re: 0, im: 0 },
+    { re: 0, im: 0 },
+  ],
+  [
+    { re: -Math.sin((50 * Math.PI) / 180), im: 0 },
+    { re: 0, im: 0 },
+    { re: Math.cos((50 * Math.PI) / 180), im: 0 },
+    { re: 0, im: 0 },
+  ],
+  [
+    { re: 0, im: 0 },
+    { re: 0, im: 0 },
+    { re: 0, im: 0 },
+    { re: 1, im: 0 },
+  ],
+]
+
+srcPromise
+  .then((cloud) => {
+    //console.log(cloud);
+    return cloud
+  })
+  .then((src) => pontu.cloud_transform(src, tm))
+  //.then((cloud) => pontu.cloud_save(cloud, "./test/clouds/bun0_d.pcd"))
+  .then((cloud) => {
+    console.log('Foi')
+  })
