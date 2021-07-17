@@ -38,6 +38,8 @@ Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens 
 
 Em seguida faça o download desse projeto, acesse o diretório do projeto a partir do terminal e execute o comando abaixo para instalar o módulo **node-gyp**, responsável por compilar o módulo nativo, de forma global.
 
+> **OBS:** Para o **node-gyp** conseguir compilar seu código corretamente, o sistema operacional precisa ter as ferramentas de compilação adequadas instaladas. Verifique as dependências no [repositório do projeto node-gyp](https://github.com/nodejs/node-gyp#installation).
+
 ```bash
 npm install -g node-gyp
 ```
