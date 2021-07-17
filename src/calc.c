@@ -82,7 +82,7 @@ real calc_gaussian(real x, real s)
 {
 	real num = exp((-1.0 * x * x) / (2.0 * s * s));
 	real den = s * sqrt(2.0 * CALC_PI);
-	
+
 	return num / den;
 }
 
@@ -90,7 +90,6 @@ real calc_gaussian3(real x, real y, real z, real s)
 {
 	real num = exp(-1.0 * ((x * x) + (y * y) + (z * z)) / (2.0 * s * s));
 	real den = pow(2.0 * CALC_PI * s * s, 1.5);
-	
+
 	return num / den;
 }
-

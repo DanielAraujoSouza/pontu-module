@@ -34,7 +34,7 @@ void vector3_free(struct vector3 **v)
 {
 	if (v == NULL)
 		return;
-	
+
 	free(*v);
 	*v = NULL;
 }
@@ -123,7 +123,8 @@ void vector3_setlength(struct vector3 *v, real l)
 {
 	real mag = calc_length3(v->x, v->y, v->z);
 
-	if (mag > 0.0) {
+	if (mag > 0.0)
+	{
 		mag = l / mag;
 
 		v->x *= mag;
@@ -197,21 +198,21 @@ real vector3_dot(struct vector3 *a, struct vector3 *b)
 
 real vector3_angle(struct vector3 *a, struct vector3 *b)
 {
-	real l1 = a->x*a->x + a->y*a->y + a->z*a->z;
-	real l2 = b->x*b->x + b->y*b->y + b->z*b->z;
+	real l1 = a->x * a->x + a->y * a->y + a->z * a->z;
+	real l2 = b->x * b->x + b->y * b->y + b->z * b->z;
 	real prod = vector3_dot(a, b) / sqrt(l1 * l2);
-	
+
 	prod = calc_max2(prod, -1.0);
 	prod = calc_min2(prod, +1.0);
-	
+
 	return acos(prod);
 }
 
 struct vector3 *vector3_cross(struct vector3 *a, struct vector3 *b)
 {
 	return vector3_new((a->y * b->z) - (a->z * b->y),
-			           (a->z * b->x) - (a->x * b->z),
-			           (a->x * b->y) - (a->y * b->x));
+										 (a->z * b->x) - (a->x * b->z),
+										 (a->x * b->y) - (a->y * b->x));
 }
 
 real vector3_cross2(struct vector3 *a, struct vector3 *b)
@@ -263,7 +264,7 @@ real vector3_cosdistance(struct vector3 *v1, struct vector3 *v2)
 real vector3_mse(struct vector3 *v1, struct vector3 *v2)
 {
 	real d = calc_squared_length3(v1->x - v2->x, v1->y - v2->y, v1->z - v2->z);
-	
+
 	return d / 3.0;
 }
 
@@ -283,11 +284,11 @@ real vector3_chi_distance(struct vector3 *v1, struct vector3 *v2)
 real vector3_canberra(struct vector3 *v1, struct vector3 *v2)
 {
 	real n = fabs(v1->x - v2->x) +
-	         fabs(v1->y - v2->y) +
-	         fabs(v1->z - v2->z);
+					 fabs(v1->y - v2->y) +
+					 fabs(v1->z - v2->z);
 	real d = fabs(v1->x) + fabs(v2->x) +
-	         fabs(v1->y) + fabs(v2->y) +
-	         fabs(v1->z) + fabs(v2->z);
+					 fabs(v1->y) + fabs(v2->y) +
+					 fabs(v1->z) + fabs(v2->z);
 
 	return n / d;
 }
@@ -326,18 +327,18 @@ struct vector3 *vector3_projection(struct vector3 *a, struct vector3 *b)
 struct vector3 *vector3_reflection(struct vector3 *v, struct vector3 *n)
 {
 	struct vector3 *r = vector3_zero();
-	
+
 	vector3_copy(n, r);
 	vector3_scale(r, 2 * vector3_dot(v, n));
-	
+
 	r = vector3_sub(v, r);
 
 	return r;
 }
 
 struct vector3 *vector3_normal(struct vector3 *a,
-                               struct vector3 *b,
-                               struct vector3 *c)
+															 struct vector3 *b,
+															 struct vector3 *c)
 {
 	struct vector3 *v1 = vector3_sub(b, a);
 	struct vector3 *v2 = vector3_sub(c, a);
@@ -353,15 +354,15 @@ real vector3_area(struct vector3 *a, struct vector3 *b, struct vector3 *c)
 {
 	struct vector3 *n = vector3_normal(a, b, c);
 	real ret = 0.5 * vector3_length(n);
-	
+
 	vector3_free(&n);
 
 	return ret;
 }
 
 real vector3_menger_curvature(struct vector3 *a,
-			                  struct vector3 *b,
-			                  struct vector3 *c)
+															struct vector3 *b,
+															struct vector3 *c)
 {
 	struct vector3 *s1 = vector3_sub(a, b);
 	struct vector3 *s2 = vector3_sub(b, c);
@@ -389,31 +390,33 @@ struct vector3 *vector3_average(struct vector3 *a, struct vector3 *b)
 }
 
 struct vector3 *vector3_closest_to_list(struct vector3 **points,
-                                        uint numpts,
-                                        struct vector3 *p)
+																				uint numpts,
+																				struct vector3 *p)
 {
 	uint index = 0;
 	real temp = 0;
 	real dist = vector3_squared_distance(p, points[0]);
 
-	for (uint i = 1; i < numpts; i++) {
+	for (uint i = 1; i < numpts; i++)
+	{
 		temp = vector3_squared_distance(p, points[i]);
-		if (temp < dist) {
+		if (temp < dist)
+		{
 			dist = temp;
 			index = i;
 		}
 	}
-	
+
 	return points[index];
 }
 
-void vector3_debug(struct vector3 *v, FILE * output)
+void vector3_debug(struct vector3 *v, FILE *output)
 {
-	if (v == NULL) {
+	if (v == NULL)
+	{
 		fprintf(output, "!!! vector3 empty !!!\n");
 		return;
 	}
 
 	fprintf(output, "%.4f %.4f %.4f\n", v->x, v->y, v->z);
 }
-

@@ -37,7 +37,7 @@ typedef struct cloud *(*closest_points_func)(struct cloud *, struct cloud *);
  * \brief Initializes a cloud
  * \return Pointer to the new cloud (empty)
  */
-struct cloud *cloud_new();
+struct cloud *cloud_new(void);
 
 /**
  * \brief Frees a cloud

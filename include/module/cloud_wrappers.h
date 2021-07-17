@@ -19,18 +19,12 @@
 
 typedef struct
 {
+  char *err_info;
   napi_async_work work;
   napi_deferred deferred;
   char *filename;
   struct cloud *cloud;
 } CloudSaveData;
-
-/**
- * @brief Desaloca memoria da esturtura CloudSaveData.
- * 
- * @param data Estrutura a ser desalocada.
- */
-void FreeCloudSaveData(CloudSaveData **data);
 
 /**
  * @brief Salva, de forma assíncrona, uma nuvem de pontos em um arquivo (csv, pcd, ply ou xyz).
@@ -58,18 +52,12 @@ napi_value CloudSaveSync(napi_env env, napi_callback_info info);
 
 typedef struct
 {
+  char *err_info;
   napi_async_work work;
   napi_deferred deferred;
   char *filename;
   struct cloud *cloud;
 } CloudLoadData;
-
-/**
- * @brief Desaloca memoria da esturtura CloudLoadData.
- * 
- * @param data Estrutura a ser desalocada.
- */
-void FreeCloudLoadData(CloudLoadData **data);
 
 /**
  * @brief Carrega, de forma assíncrona, uma nuvem de pontos a partir de um arquivo (csv, obj, pcd, ply ou xyz).
@@ -95,6 +83,7 @@ napi_value CloudLoadSync(napi_env env, napi_callback_info info);
 
 typedef struct
 {
+  char *err_info;
   napi_async_work work;
   napi_deferred deferred;
   struct cloud *source;
@@ -103,13 +92,6 @@ typedef struct
   char *closest;
   real rmse;
 } CloudRmseData;
-
-/**
- * @brief Desaloca memoria da esturtura CloudRmseData.
- * 
- * @param data Estrutura a ser desalocada.
- */
-void FreeCloudRmseData(CloudRmseData **data);
 
 /**
  * @brief Calcula, de forma assíncrona, o RMSE entre duas nuvens de pontos.
@@ -145,18 +127,12 @@ napi_value CloudRmseSync(napi_env env, napi_callback_info info);
 
 typedef struct
 {
+  char *err_info;
   napi_async_work work;
   napi_deferred deferred;
   struct cloud *cloud;
   struct matrix *rt;
 } CloudTransformData;
-
-/**
- * @brief Desaloca memoria da esturtura CloudTransformData.
- * 
- * @param data Estrutura a ser desalocada.
- */
-void FreeCloudTransfoData(CloudTransformData **data);
 
 /**
  * @brief Aplica, de forma assíncrona, uma matriz de transformação(4x4 - rotação e translação) em uma nuvem de pontos

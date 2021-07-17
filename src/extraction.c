@@ -1,8 +1,8 @@
 #include "../include/extraction.h"
 
 struct dataframe *extraction_plane(struct cloud *cloud,
-				                struct dataframe *(*mfunc) (struct cloud *),
-				                struct vector3 *norm)
+																	 struct dataframe *(*mfunc)(struct cloud *),
+																	 struct vector3 *norm)
 {
 	struct cloud *par1 = cloud_new();
 	struct cloud *par2 = cloud_new();
@@ -11,8 +11,8 @@ struct dataframe *extraction_plane(struct cloud *cloud,
 
 	cloud_plane_partition(cloud, plane, par1, par2);
 
-	struct dataframe *r1 = (*mfunc) (par1);
-	struct dataframe *r2 = (*mfunc) (par2);
+	struct dataframe *r1 = (*mfunc)(par1);
+	struct dataframe *r2 = (*mfunc)(par2);
 	struct dataframe *ans = dataframe_concat_hor(r1, r2);
 
 	cloud_free(&par1);
@@ -26,8 +26,8 @@ struct dataframe *extraction_plane(struct cloud *cloud,
 }
 
 struct dataframe *extraction_recursive(struct cloud *cloud,
-				                    struct dataframe *(*mfunc) (struct cloud *),
-				                    struct vector3 *norm)
+																			 struct dataframe *(*mfunc)(struct cloud *),
+																			 struct vector3 *norm)
 {
 	struct cloud *par1 = cloud_new();
 	struct cloud *par2 = cloud_new();
@@ -43,8 +43,8 @@ struct dataframe *extraction_recursive(struct cloud *cloud,
 
 	cloud_plane_partition(par1, plane_fh, par1_fh, par2_fh);
 
-	struct dataframe *r1 = dataframe_concat_hor((*mfunc) (par1_fh),
-	                                      (*mfunc) (par2_fh));
+	struct dataframe *r1 = dataframe_concat_hor((*mfunc)(par1_fh),
+																							(*mfunc)(par2_fh));
 	struct cloud *par1_sh = cloud_new();
 	struct cloud *par2_sh = cloud_new();
 	struct vector3 *pt_sh = cloud_get_centroid(par2);
@@ -52,10 +52,10 @@ struct dataframe *extraction_recursive(struct cloud *cloud,
 
 	cloud_plane_partition(par2, plane_sh, par1_sh, par2_sh);
 
-	struct dataframe *r2 = dataframe_concat_hor((*mfunc) (par1_sh),
-	                                      (*mfunc) (par2_sh));
+	struct dataframe *r2 = dataframe_concat_hor((*mfunc)(par1_sh),
+																							(*mfunc)(par2_sh));
 	struct dataframe *ans = dataframe_concat_hor(r1, r2);
-	
+
 	plane_free(&plane_fh);
 	vector3_free(&pt_fh);
 	cloud_free(&par2_fh);
@@ -76,25 +76,25 @@ struct dataframe *extraction_recursive(struct cloud *cloud,
 }
 
 struct dataframe *extraction_sagittal(struct cloud *cloud,
-				                   struct dataframe *(*mfunc) (struct cloud *))
+																			struct dataframe *(*mfunc)(struct cloud *))
 {
 	return extraction_recursive(cloud, mfunc, vector3_new(1, 0, 0));
 }
 
 struct dataframe *extraction_transversal(struct cloud *cloud,
-				                    struct dataframe *(*mfunc) (struct cloud *))
+																				 struct dataframe *(*mfunc)(struct cloud *))
 {
 	return extraction_recursive(cloud, mfunc, vector3_new(0, 1, 0));
 }
 
 struct dataframe *extraction_frontal(struct cloud *cloud,
-				                  struct dataframe *(*mfunc) (struct cloud *))
+																		 struct dataframe *(*mfunc)(struct cloud *))
 {
 	return extraction_recursive(cloud, mfunc, vector3_new(0, 0, 1));
 }
 
 struct dataframe *extraction_radial(struct cloud *cloud,
-				                 struct dataframe *(*mfunc) (struct cloud *))
+																		struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
 	real slice = 25.0 * 25.0;
@@ -105,7 +105,8 @@ struct dataframe *extraction_radial(struct cloud *cloud,
 	struct cloud *sub4 = cloud_new();
 
 	real d = 0.0;
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		d = vector3_squared_distance(set->point, nosetip);
 
 		if (d <= slice)
@@ -118,10 +119,10 @@ struct dataframe *extraction_radial(struct cloud *cloud,
 			cloud_insert_vector3(sub4, set->point);
 	}
 
-	struct dataframe *ans1 = dataframe_concat_hor((*mfunc) (sub1),
-	                                              (*mfunc) (sub2));
-	struct dataframe *ans2 = dataframe_concat_hor((*mfunc) (sub3),
-	                                              (*mfunc) (sub4));
+	struct dataframe *ans1 = dataframe_concat_hor((*mfunc)(sub1),
+																								(*mfunc)(sub2));
+	struct dataframe *ans2 = dataframe_concat_hor((*mfunc)(sub3),
+																								(*mfunc)(sub4));
 	struct dataframe *ans = dataframe_concat_hor(ans1, ans2);
 
 	dataframe_free(&ans1);
@@ -136,13 +137,13 @@ struct dataframe *extraction_radial(struct cloud *cloud,
 }
 
 struct dataframe *extraction_upper(struct cloud *cloud,
-				                struct dataframe *(*mfunc) (struct cloud *))
+																	 struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct vector3 *norm = vector3_new(0, 1, 0);
 	struct vector3 *point = cloud_point_faraway_bestfit(cloud);
 	struct plane *plane = plane_new(norm, point);
 	struct cloud *sub = cloud_cut_plane(cloud, plane);
-	struct dataframe *ans = (*mfunc) (sub);
+	struct dataframe *ans = (*mfunc)(sub);
 
 	cloud_free(&sub);
 	plane_free(&plane);
@@ -153,13 +154,13 @@ struct dataframe *extraction_upper(struct cloud *cloud,
 }
 
 struct dataframe *extraction_lower(struct cloud *cloud,
-				                struct dataframe *(*mfunc) (struct cloud *))
+																	 struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct vector3 *norm = vector3_new(0, -1, 0);
 	struct vector3 *point = cloud_point_faraway_bestfit(cloud);
 	struct plane *plane = plane_new(norm, point);
 	struct cloud *sub = cloud_cut_plane(cloud, plane);
-	struct dataframe *ans = (*mfunc) (sub);
+	struct dataframe *ans = (*mfunc)(sub);
 
 	cloud_free(&sub);
 	plane_free(&plane);
@@ -170,20 +171,21 @@ struct dataframe *extraction_lower(struct cloud *cloud,
 }
 
 struct dataframe *extraction_manhattan(struct cloud *cloud,
-				                    struct dataframe *(*mfunc) (struct cloud *))
+																			 struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
 	struct cloud *nose = cloud_new();
 	real d = 0.0;
 
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		d = vector3_manhattan(set->point, nosetip);
 
 		if (d <= 150.0)
 			cloud_insert_vector3(nose, set->point);
 	}
 
-	struct dataframe *ans = (*mfunc) (nose);
+	struct dataframe *ans = (*mfunc)(nose);
 
 	cloud_free(&nose);
 	vector3_free(&nosetip);
@@ -192,7 +194,7 @@ struct dataframe *extraction_manhattan(struct cloud *cloud,
 }
 
 struct dataframe *extraction_4(struct cloud *cloud,
-			                struct dataframe *(*mfunc) (struct cloud *))
+															 struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct vector3 *norm_sagit = vector3_new(1, 0, 0);
 	struct vector3 *centroid = cloud_get_centroid(cloud);
@@ -213,10 +215,10 @@ struct dataframe *extraction_4(struct cloud *cloud,
 	cloud_plane_partition(left, plane_left, left_1, left_2);
 	cloud_plane_partition(right, plane_right, right_1, right_2);
 
-	struct dataframe *ans_left_1 = (*mfunc) (left_1);
-	struct dataframe *ans_left_2 = (*mfunc) (left_2);
-	struct dataframe *ans_right_1 = (*mfunc) (right_1);
-	struct dataframe *ans_right_2 = (*mfunc) (right_2);
+	struct dataframe *ans_left_1 = (*mfunc)(left_1);
+	struct dataframe *ans_left_2 = (*mfunc)(left_2);
+	struct dataframe *ans_right_1 = (*mfunc)(right_1);
+	struct dataframe *ans_right_2 = (*mfunc)(right_2);
 
 	struct dataframe *subleft = dataframe_concat_hor(ans_left_1, ans_left_2);
 	struct dataframe *subright = dataframe_concat_hor(ans_right_1, ans_right_2);
@@ -245,7 +247,7 @@ struct dataframe *extraction_4(struct cloud *cloud,
 }
 
 struct dataframe *extraction_6(struct cloud *cloud,
-			                struct dataframe *(*mfunc) (struct cloud *))
+															 struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct vector3 *norm_sagit = vector3_new(1, 0, 0);
 	struct vector3 *centroid = cloud_get_centroid(cloud);
@@ -266,12 +268,12 @@ struct dataframe *extraction_6(struct cloud *cloud,
 	cloud_plane_partition(left, plane_left, left_1, left_2);
 	cloud_plane_partition(right, plane_right, right_1, right_2);
 
-	struct dataframe *ans_left = (*mfunc) (left);
-	struct dataframe *ans_right = (*mfunc) (right);
-	struct dataframe *ans_left_1 = (*mfunc) (left_1);
-	struct dataframe *ans_left_2 = (*mfunc) (left_2);
-	struct dataframe *ans_right_1 = (*mfunc) (right_1);
-	struct dataframe *ans_right_2 = (*mfunc) (right_2);
+	struct dataframe *ans_left = (*mfunc)(left);
+	struct dataframe *ans_right = (*mfunc)(right);
+	struct dataframe *ans_left_1 = (*mfunc)(left_1);
+	struct dataframe *ans_left_2 = (*mfunc)(left_2);
+	struct dataframe *ans_right_1 = (*mfunc)(right_1);
+	struct dataframe *ans_right_2 = (*mfunc)(right_2);
 
 	struct dataframe *full = dataframe_concat_hor(ans_left, ans_right);
 	struct dataframe *subleft = dataframe_concat_hor(ans_left_1, ans_left_2);
@@ -306,7 +308,7 @@ struct dataframe *extraction_6(struct cloud *cloud,
 }
 
 struct dataframe *extraction_7(struct cloud *cloud,
-			                struct dataframe *(*mfunc) (struct cloud *))
+															 struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct vector3 *norm_sagit = vector3_new(1, 0, 0);
 	struct vector3 *centroid = cloud_get_centroid(cloud);
@@ -316,8 +318,8 @@ struct dataframe *extraction_7(struct cloud *cloud,
 
 	cloud_plane_partition(cloud, plane_sagit, left, right);
 
-	struct dataframe *ans_left = (*mfunc) (left);
-	struct dataframe *ans_right = (*mfunc) (right);
+	struct dataframe *ans_left = (*mfunc)(left);
+	struct dataframe *ans_right = (*mfunc)(right);
 
 	struct vector3 *norm_trans = vector3_new(0, 1, 0);
 	struct cloud *left_1 = cloud_new();
@@ -329,13 +331,13 @@ struct dataframe *extraction_7(struct cloud *cloud,
 
 	cloud_plane_partition(left, plane_left, left_1, left_2);
 	cloud_plane_partition(right, plane_right, right_1, right_2);
-	
-	struct dataframe *ans_left_1 = (*mfunc) (left_1);
-	struct dataframe *ans_left_2 = (*mfunc) (left_2);
-	struct dataframe *ans_right_1 = (*mfunc) (right_1);
-	struct dataframe *ans_right_2 = (*mfunc) (right_2);
 
-	struct dataframe *ans_full = (*mfunc) (cloud);
+	struct dataframe *ans_left_1 = (*mfunc)(left_1);
+	struct dataframe *ans_left_2 = (*mfunc)(left_2);
+	struct dataframe *ans_right_1 = (*mfunc)(right_1);
+	struct dataframe *ans_right_2 = (*mfunc)(right_2);
+
+	struct dataframe *ans_full = (*mfunc)(cloud);
 	struct dataframe *halves = dataframe_concat_hor(ans_left, ans_right);
 	struct dataframe *subleft = dataframe_concat_hor(ans_left_1, ans_left_2);
 	struct dataframe *subright = dataframe_concat_hor(ans_right_1, ans_right_2);
@@ -401,10 +403,10 @@ struct cloud *extraction_vshape_base(struct cloud *cloud)
 }
 
 struct dataframe *extraction_vshape(struct cloud *cloud,
-				                 struct dataframe *(*mfunc) (struct cloud *))
+																		struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct cloud *seg = extraction_vshape_base(cloud);
-	struct dataframe *ans = (*mfunc) (seg);
+	struct dataframe *ans = (*mfunc)(seg);
 
 	cloud_free(&seg);
 
@@ -412,7 +414,7 @@ struct dataframe *extraction_vshape(struct cloud *cloud,
 }
 
 struct dataframe *extraction_vshape_f(struct cloud *cloud,
-				                   struct dataframe *(*mfunc) (struct cloud *))
+																			struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct cloud *seg = extraction_vshape_base(cloud);
 	struct dataframe *ans = extraction_frontal(seg, mfunc);
@@ -423,7 +425,7 @@ struct dataframe *extraction_vshape_f(struct cloud *cloud,
 }
 
 struct dataframe *extraction_vshape_s(struct cloud *cloud,
-				                   struct dataframe *(*mfunc) (struct cloud *))
+																			struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct cloud *seg = extraction_vshape_base(cloud);
 	struct dataframe *ans = extraction_sagittal(seg, mfunc);
@@ -434,7 +436,7 @@ struct dataframe *extraction_vshape_s(struct cloud *cloud,
 }
 
 struct dataframe *extraction_vshape_t(struct cloud *cloud,
-				                   struct dataframe *(*mfunc) (struct cloud *))
+																			struct dataframe *(*mfunc)(struct cloud *))
 {
 	struct cloud *seg = extraction_vshape_base(cloud);
 	struct dataframe *ans = extraction_transversal(seg, mfunc);
@@ -443,4 +445,3 @@ struct dataframe *extraction_vshape_t(struct cloud *cloud,
 
 	return ans;
 }
-

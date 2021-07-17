@@ -4,12 +4,13 @@ real hu_regular_moment(int p, int q, int r, struct cloud *cloud)
 {
 	real moment = 0.0;
 
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		moment += pow(set->point->x, p) *
-		          pow(set->point->y, q) *
-		          pow(set->point->z, r);
+							pow(set->point->y, q) *
+							pow(set->point->z, r);
 	}
-	
+
 	return moment;
 }
 
@@ -18,11 +19,12 @@ real hu_central_moment(int p, int q, int r, struct cloud *cloud)
 	real moment = 0.0;
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		moment += pow(set->point->x - centroid->x, p) *
-		          pow(set->point->y - centroid->y, q) *
-		          pow(set->point->z - centroid->z, r) *
-		          vector3_distance(set->point, centroid);
+							pow(set->point->y - centroid->y, q) *
+							pow(set->point->z - centroid->z, r) *
+							vector3_distance(set->point, centroid);
 	}
 
 	vector3_free(&centroid);
@@ -34,7 +36,7 @@ real hu_normalized_moment(int p, int q, int r, struct cloud *cloud)
 {
 	real central = hu_central_moment(p, q, r, cloud);
 	real zero = hu_central_moment(0, 0, 0, cloud);
-	
+
 	return central / pow(zero, ((p + q + r) / 3.0) + 1.0);
 }
 
@@ -59,10 +61,10 @@ struct dataframe *hu_cloud_moments_hu1980(struct cloud *cloud)
 
 	real j1 = hu200 + hu020 + hu002;
 	real j2 = (hu200 * hu020) + (hu200 * hu002) + (hu020 * hu002) -
-	          (hu110 * hu110) - (hu101 * hu101) - (hu011 * hu011);
+						(hu110 * hu110) - (hu101 * hu101) - (hu011 * hu011);
 	real j3 = (hu200 * hu020 * hu002) + (2 * hu110 * hu101 * hu011) -
-	          (hu002 * hu110 * hu110) - (hu020 * hu101 * hu101) -
-	          (hu200 * hu011 * hu011);
+						(hu002 * hu110 * hu110) - (hu020 * hu101 * hu101) -
+						(hu200 * hu011 * hu011);
 
 	dataframe_set(results, 0, 0, j1);
 	dataframe_set(results, 0, 1, j2);
@@ -73,21 +75,24 @@ struct dataframe *hu_cloud_moments_hu1980(struct cloud *cloud)
 
 struct dataframe *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r)
 {
-	struct dataframe *ans = dataframe_new(1, (p + 1) * (q + 1) * (r + 1));
-	
-	int col = 0;
-	for (int i = 0; i <= p; i++) {
-		for (int j = 0; j <= q; j++) {
-			for (int k = 0; k <= r; k++) {
+	struct dataframe *ans = dataframe_new(1, (uint)((p + 1) * (q + 1) * (r + 1)));
+
+	uint col = 0;
+	for (int i = 0; i <= p; i++)
+	{
+		for (int j = 0; j <= q; j++)
+		{
+			for (int k = 0; k <= r; k++)
+			{
 				dataframe_set(ans,
-				              0,
-				              col,
-				              hu_normalized_moment(i, j, k, cloud));
+											0,
+											col,
+											hu_normalized_moment(i, j, k, cloud));
 				col++;
 			}
 		}
 	}
-	
+
 	return ans;
 }
 
@@ -126,13 +131,13 @@ struct dataframe *hu_cloud_moments_hututu(struct cloud *cloud)
 	i4 = pow((g + d), 2) + pow((f + b), 2);
 
 	i5 = (g - 3 * d) * (g + d) * (pow((g + d), 2) - 3 * pow((f + b), 2)) +
-	     (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
+			 (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
 	i6 = (e - a) * (pow((g + d), 2) - pow((f + b), 2)) +
-	     4 * c * (g + d) * (f + b);
+			 4 * c * (g + d) * (f + b);
 
 	i7 = (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2)) -
-	     (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
+			 (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
 	dataframe_set(results, 0, 0, i1);
 	dataframe_set(results, 0, 1, i2);
@@ -159,13 +164,13 @@ struct dataframe *hu_cloud_moments_hututu(struct cloud *cloud)
 	i4 = pow((g + d), 2) + pow((f + b), 2);
 
 	i5 = (g - 3 * d) * (g + d) * (pow((g + d), 2) - 3 * pow((f + b), 2)) +
-	     (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
+			 (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
 	i6 = (e - a) * (pow((g + d), 2) - pow((f + b), 2)) +
-	     4 * c * (g + d) * (f + b);
+			 4 * c * (g + d) * (f + b);
 
 	i7 = (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2)) -
-	     (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
+			 (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
 	dataframe_set(results, 0, 7, i1);
 	dataframe_set(results, 0, 8, i2);
@@ -192,13 +197,13 @@ struct dataframe *hu_cloud_moments_hututu(struct cloud *cloud)
 	i4 = pow((g + d), 2) + pow((f + b), 2);
 
 	i5 = (g - 3 * d) * (g + d) * (pow((g + d), 2) - 3 * pow((f + b), 2)) +
-	     (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
+			 (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
 	i6 = (e - a) * (pow((g + d), 2) - pow((f + b), 2)) +
-	     4 * c * (g + d) * (f + b);
+			 4 * c * (g + d) * (f + b);
 
 	i7 = (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2)) -
-	     (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
+			 (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
 	dataframe_set(results, 0, 14, i1);
 	dataframe_set(results, 0, 15, i2);
@@ -210,4 +215,3 @@ struct dataframe *hu_cloud_moments_hututu(struct cloud *cloud)
 
 	return results;
 }
-
