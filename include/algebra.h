@@ -131,7 +131,7 @@ struct matrix *algebra_mat_eigen_val(struct matrix *mat);
  * \return A matrix NxN, where each column is a eigen vector
  */
 struct matrix *algebra_mat_eigen_vec(struct matrix *mat,
-                                      struct matrix *eig_val);
+                                     struct matrix *eig_val);
 
 /**
  * \brief Finds the eigen vector of a square matrix NxN
@@ -153,7 +153,6 @@ cnum algebra_vec_norm(struct matrix *mat);
  * \param mat Target matrix
  * \return The normalized vector, or NULL if it fails
  */
- struct matrix *algebra_vec_normalize(struct matrix *mat);
+struct matrix *algebra_vec_normalize(struct matrix *mat);
 
 #endif // ALGEBRA_H
-
