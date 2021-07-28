@@ -22,6 +22,7 @@ Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens 
 - [Exemplos](#exemplos)
   - [Assíncrono](#assíncrono)
   - [Síncrono](#síncrono)
+- [Debug](#debug)
 - [Tipos de Dados](#tipos-de-dados)
   - [Cloud OBJ](#cloud-obj)
   - [Matrix4](#matrix4)
@@ -69,9 +70,9 @@ npm install ../pontu-module
 Após incluir o módulo Pontu às dependências de seu projeto, basta utilizar a função `require`.
 
 ```js
-const pontu = require("pontu-module");
+const pontu = require('pontu-module')
 
-const src = pontu.cloud_load_sync("mycloud.pcd");
+const src = pontu.cloud_load_sync('mycloud.pcd')
 ```
 
 ## Pontu API
@@ -97,7 +98,7 @@ pontu.cloud_load(filename)
 Método para carregar arquivos de nuvem de pontos (**csv**, **obj**, **pcd**, **ply** ou **xyz**) de forma síncrona.
 
 ```js
-const cloudObj = pontu.cloud_load(filename);
+const cloudObj = pontu.cloud_load(filename)
 ```
 
 - **[IN] filename** - Path para o arquivo de entrada ([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)).
@@ -127,7 +128,7 @@ pontu.cloud_rmse(srcCloud, tgtCloud, max_dist, closest_type)
 Método para calcula o RMSE entre duas nuvens de pontos de forma síncrona.
 
 ```js
-const rmse = pontu.cloud_rmse(srcCloud, tgtCloud, max_dist, closest_type);
+const rmse = pontu.cloud_rmse(srcCloud, tgtCloud, max_dist, closest_type)
 ```
 
 - **[IN] srcCloud** - Objeto correspondente a nuvem _source_ ([Cloud OBJ](#cloud-obj)).
@@ -158,7 +159,7 @@ pontu.cloud_save(cloudObj, filename)
 Método para salvar uma nuvem de pontos em um arquivo (**csv**, **obj**, **pcd**, **ply** ou **xyz**) de forma síncrona.
 
 ```js
-const saveResult = pontu.cloud_save_sync(cloudObj, filename);
+const saveResult = pontu.cloud_save_sync(cloudObj, filename)
 ```
 
 - **[IN] cloudObj** - Objeto correspondente a nuvem de pontos que será salva ([Cloud OBJ](#cloud-obj)).
@@ -185,7 +186,7 @@ pontu.cloud_transform(cloudObj, tm)
 Método para aplica uma matriz de transformação (4x4 - rotação e translação) em uma nuvem de pontos de forma síncrona.
 
 ```js
-const transCloud = pontu.cloud_transform(cloudObj, tm);
+const transCloud = pontu.cloud_transform(cloudObj, tm)
 ```
 
 - **[IN] cloudObj** - Objeto correspondente a nuvem de pontos que será transformada ([Cloud OBJ](#cloud-obj)).
@@ -227,7 +228,7 @@ const icpRes = pontu.registration_icp_sync(
   k,
   max_dist,
   closest_type
-);
+)
 ```
 
 - **[IN] srcCloud** - Objeto correspondente a nuvem que será alinhada ([Cloud OBJ](#cloud-obj)).
@@ -247,91 +248,91 @@ const icpRes = pontu.registration_icp_sync(
 ### Assíncrono
 
 ```js
-const pontu = require("pontu-module");
+const pontu = require('pontu-module')
 
 // Configurações do ICP
-const th = 0.000001; // Critérios de parada (erro)
-const k = 10; // Número máximo de iterações
-const max_dist = 4000; // Distância máxima entre pontos
-const closestType = "bf"; // Algorimo de pareamento
+const th = 0.000001 // Critérios de parada (erro)
+const k = 10 // Número máximo de iterações
+const max_dist = 4000 // Distância máxima entre pontos
+const closestType = 'bf' // Algorimo de pareamento
 
-console.log("Carregando nuvens...");
-const srcPromise = pontu.cloud_load("./test/clouds/bun01.pcd"); // Nuvem que será corrigida
-const tgtPromise = pontu.cloud_load("./test/clouds/bun0.pcd"); // Nuvem referência
+console.log('Carregando nuvens...')
+const srcPromise = pontu.cloud_load('./test/clouds/bun01.pcd') // Nuvem que será corrigida
+const tgtPromise = pontu.cloud_load('./test/clouds/bun0.pcd') // Nuvem referência
 
 // Executa o ICP
 const regPromise = Promise.all([srcPromise, tgtPromise])
   .then(([source, target]) => {
-    console.log("Nuvens carregadas. Iniciando ICP...");
-    return pontu.registration_icp(source, target, th, k, max_dist, closestType);
+    console.log('Nuvens carregadas. Iniciando ICP...')
+    return pontu.registration_icp(source, target, th, k, max_dist, closestType)
   })
   .then((icpRes) => {
-    console.log("ICP Finalizado");
-    return icpRes;
-  });
+    console.log('ICP Finalizado')
+    return icpRes
+  })
 
 // Aplica a matrix de transformação obtida no alinhamento
 const alignPromise = Promise.all([srcPromise, regPromise])
   .then(([src, icpRes]) => {
-    console.log("Iniciando Alinhamento...");
-    return pontu.cloud_transform(src, icpRes.tm);
+    console.log('Iniciando Alinhamento...')
+    return pontu.cloud_transform(src, icpRes.tm)
   })
   .then((aligned) => {
-    console.log("Alinhamento Finalizado");
+    console.log('Alinhamento Finalizado')
 
-    return aligned;
-  });
+    return aligned
+  })
 
 // Salva a nuvem transformada em um arquivo
 const savePromise = Promise.all([alignPromise])
   .then(([aligned]) => {
-    console.log("Salvando nuvem alinhada");
-    return pontu.cloud_save(aligned, "./test/clouds/bun10.pcd");
+    console.log('Salvando nuvem alinhada')
+    return pontu.cloud_save(aligned, './test/clouds/bun10.pcd')
   })
   .then((salvedCloud) => {
-    console.log("Nuvem Salva");
-    return salvedCloud;
-  });
+    console.log('Nuvem Salva')
+    return salvedCloud
+  })
 
 // Calcula o RMSE entre a nuvem transformada e nuvem referência
 const rmsePromise = Promise.all([tgtPromise, alignPromise])
   .then(([tgt, aligned]) => {
-    console.log("Calculando RMSE...");
-    return pontu.cloud_rmse(aligned, tgt, max_dist, closestType);
+    console.log('Calculando RMSE...')
+    return pontu.cloud_rmse(aligned, tgt, max_dist, closestType)
   })
   .then((rmse) => {
-    console.log("RMSE Calculado");
-    return rmse;
-  });
+    console.log('RMSE Calculado')
+    return rmse
+  })
 
 // Imprime os resultados obtidos
 Promise.all([regPromise, rmsePromise, alignPromise]).then(
   ([icpRes, rmse, aligned]) => {
-    console.log("Resultados Obtidos");
-    console.log("- Matriz Transformação: ", icpRes.tm);
-    console.log("- RMSE: ", rmse);
-    console.log("- Nuvem Alinhada: ", aligned);
+    console.log('Resultados Obtidos')
+    console.log('- Matriz Transformação: ', icpRes.tm)
+    console.log('- RMSE: ', rmse)
+    console.log('- Nuvem Alinhada: ', aligned)
   }
-);
+)
 ```
 
 ### Síncrono
 
 ```js
-const pontu = require("pontu-module");
+const pontu = require('pontu-module')
 
 // Configurações do ICP
-const th = 0.000001; // Critérios de parada (erro)
-const k = 10; // Número máximo de iterações
-const max_dist = 4000; // Distância máxima entre pontos
-const closestType = "bf"; // Algorimo de pareamento
+const th = 0.000001 // Critérios de parada (erro)
+const k = 10 // Número máximo de iterações
+const max_dist = 4000 // Distância máxima entre pontos
+const closestType = 'bf' // Algorimo de pareamento
 
-console.log("Carregando nuvens...");
-const src = pontu.cloud_load_sync("./test/clouds/bun01.pcd"); // Nuvem que será corrigida
-const tgt = pontu.cloud_load_sync("./test/clouds/bun0.pcd"); // Nuvem referência
+console.log('Carregando nuvens...')
+const src = pontu.cloud_load_sync('./test/clouds/bun01.pcd') // Nuvem que será corrigida
+const tgt = pontu.cloud_load_sync('./test/clouds/bun0.pcd') // Nuvem referência
 
 // Executa o ICP
-console.log("Nuvens carregadas. Iniciando ICP...");
+console.log('Nuvens carregadas. Iniciando ICP...')
 const icpRes = pontu.registration_icp_sync(
   src,
   tgt,
@@ -339,28 +340,48 @@ const icpRes = pontu.registration_icp_sync(
   k,
   max_dist,
   closestType
-);
+)
 
 // Aplica a matrix de transformação obtida no alinhamento
-console.log("ICP Finalizado. Iniciando Alinhamento...");
-const aligned = pontu.cloud_transform_sync(src, icpRes.tm);
+console.log('ICP Finalizado. Iniciando Alinhamento...')
+const aligned = pontu.cloud_transform_sync(src, icpRes.tm)
 
 // Salva a nuvem transformada em um arquivo
-console.log("Alinhamento Finalizado. Iniciando Salvamento...");
-const salveRes = pontu.cloud_save_sync(aligned, "./test/clouds/bun10.pcd");
+console.log('Alinhamento Finalizado. Iniciando Salvamento...')
+const salveRes = pontu.cloud_save_sync(aligned, './test/clouds/bun10.pcd')
 console.log(
-  `Nuvem de pontos ${salveRes ? "salva corretamente" : "não foi salva"}.`
-);
+  `Nuvem de pontos ${salveRes ? 'salva corretamente' : 'não foi salva'}.`
+)
 
 // Calcula o RMSE entre a nuvem transformada e nuvem referência
-console.log("Salvamento Finalizado. Calculando RMSE...");
-const rmse = pontu.cloud_rmse_sync(aligned, tgt, max_dist, closestType);
+console.log('Salvamento Finalizado. Calculando RMSE...')
+const rmse = pontu.cloud_rmse_sync(aligned, tgt, max_dist, closestType)
 
 // Imprime os resultados obtidos
-console.log("Resultados Obtidos");
-console.log("- Matriz Transformação: ", icpRes.tm);
-console.log("- RMSE: ", rmse);
-console.log("- Nuvem Alinhada: ", aligned);
+console.log('Resultados Obtidos')
+console.log('- Matriz Transformação: ', icpRes.tm)
+console.log('- RMSE: ', rmse)
+console.log('- Nuvem Alinhada: ', aligned)
+```
+
+## Debug
+
+Por padrão, o módulo será compilado com a produção de informações de depuração **desabilitada**. Entretanto isso pode ser bastante útil em cenários de desenvolvimento. Para compilar o módulo com produção de informações de depuração, execute:
+
+```bash
+npm run rebuild-debug
+# OU
+node-gyp --debug rebuild
+```
+
+Em seguida modifique o arquivo `./lib/binding.js` para que seja carregado a vesão **Debug** do módulo, no lugar da versão **Release**. O arquivo `binding.js`, por padrão, carrega a versão **Release** (`const addon = require('../build/Release/pontuModuleNative')`). Para carregar a versão **Debug**, comente a primeira declaração e adicione ou descomente a seguinte linha:
+
+```js
+// Carrega a versão Release
+//const addon = require('../build/Release/pontuModuleNative')
+
+// Carrega a versão Debug
+const addon = require('../build/Debug/pontuModuleNative')
 ```
 
 ## Tipos de Dados
@@ -394,7 +415,7 @@ const cloudObj = {
       z: 0.05163086578249931,
     },
   ],
-};
+}
 ```
 
 ### Matrix4
@@ -429,5 +450,5 @@ const matrix = [
     { re: 0, im: 0 },
     { re: 1, im: 0 },
   ],
-];
+]
 ```
