@@ -366,7 +366,7 @@ console.log('- Nuvem Alinhada: ', aligned)
 
 ## Debug
 
-Por padrão, o módulo será compilado com a produção de informações de depuração **desabilitada**. Entretanto isso pode ser bastante útil em cenários de desenvolvimento. Para compilar o módulo com produção de informações de depuração, execute:
+Por padrão, o módulo será compilado com a produção de informações de depuração **desabilitada**. Entretanto isso pode ser bastante útil em cenários de desenvolvimento. Para compilar o módulo, com produção de informações de depuração, execute:
 
 ```bash
 npm run rebuild-debug
@@ -374,7 +374,7 @@ npm run rebuild-debug
 node-gyp --debug rebuild
 ```
 
-Em seguida modifique o arquivo `./lib/binding.js` para que seja carregado a vesão **Debug** do módulo, no lugar da versão **Release**. O arquivo `binding.js`, por padrão, carrega a versão **Release** (`const addon = require('../build/Release/pontuModuleNative')`). Para carregar a versão **Debug**, comente a primeira declaração e adicione ou descomente a seguinte linha:
+Em seguida modifique o arquivo `./lib/binding.js` para que seja carregado a vesão **Debug** do módulo, no lugar da versão **Release**. O arquivo `binding.js`, por padrão, carrega a versão **Release** (`const addon = require('../build/Release/pontuModuleNative')`). Para carregar a versão **Debug**, compilada no passo anterior, comente a primeira declaração e adicione ou descomente a seguinte linha:
 
 ```js
 // Carrega a versão Release
