@@ -1,7 +1,6 @@
 {
   "main": "lib/binding.js",
   "dependencies": {
-    "node-addon-api": "^1.1.0",
     "tap-spec": "^2.2.2",
     "tape": "^5.2.2"
   },
