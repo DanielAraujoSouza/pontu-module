@@ -1,6 +1,6 @@
 # Módulo Pontu - Node.Js
 
-Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens de pontos 3D, desenvolvida em **C**, ao ambiente javascript **Node.JS**. Esse módulo é desenvolvido a partir da API de desenvolvimento de complementos nativos do projeto Node.JS, [node-addon-api](https://github.com/nodejs/node-addon-api). Com o módulo Pontu é possivel realiza a manipulação e processamento de nuvens de pontos 3D de forma fácil sem abrir mão do desempenho proporcionado por uma linguagem de programação de baixo nível.
+Esse módulo nativo adapta a biblioteca [**Pontu**](https://gitlab.com/interfacesufc/pontu), para processamento de nuvens de pontos 3D, desenvolvida em **C**, ao ambiente javascript **Node.JS**. Esse módulo é desenvolvido a partir da API de desenvolvimento de complementos nativos do projeto Node.JS, [node-addon-api](https://github.com/nodejs/node-addon-api). Com o módulo Pontu é possivel realiza a manipulação e processamento de nuvens de pontos 3D de forma fácil sem abrir mão do desempenho proporcionado por uma linguagem de programação de baixo nível.
 
 ## Índice
 
@@ -35,17 +35,17 @@ Esse módulo nativo adapta a biblioteca **Pontu**, para processamento de nuvens 
 
 ## Instalação
 
-> **OBS:** Se ainda não possuir nenhum versão do Node.JS [faça o download e instale](https://nodejs.org/en/download/).
+> **OBS:** Se ainda não possuir nenhuma versão do Node.JS [faça o download e instale](https://nodejs.org/en/download/).
 
 Em seguida faça o download desse projeto, acesse o diretório do projeto a partir do terminal e execute o comando abaixo para instalar o módulo **node-gyp**, responsável por compilar o módulo nativo, de forma global.
 
-> **OBS:** Para o **node-gyp** conseguir compilar seu código corretamente, o sistema operacional precisa ter as ferramentas de compilação adequadas instaladas. Verifique as dependências no [repositório do projeto node-gyp](https://github.com/nodejs/node-gyp#installation).
+> **OBS:** Para o que **node-gyp** consiga compilar seu código corretamente, o sistema operacional precisa ter as ferramentas de compilação adequadas instaladas. Verifique as dependências, para o seu sistema operacional, no [repositório do projeto node-gyp](https://github.com/nodejs/node-gyp#installation).
 
 ```bash
 npm install -g node-gyp
 ```
 
-Em seguida, ainda dentro do diretório do projeto, execute o comando abaixo para instalar as demais dependências e compilar o módulo:
+Em seguida, ainda dentro do diretório do projeto, execute o comando abaixo, para instalar as demais dependências e compilar o módulo:
 
 ```bash
 npm install
@@ -61,7 +61,7 @@ npm test
 
 ## Uso
 
-Como atualmente o módulo ainda não está disponivel no NPM, a maneira mais facil de intancia-lo em seu projeto é por meio de uma instalação NPM usando diretório local. Para isso, execute o `npm intall <folder>`, onde `<folder>` é o caminho para o diretório onde econtra-se o módulo Pontu. Por exemplo, se o módulo estiver no mesmo nível de diretório que seu projeto, bastaria executar dentro do diretório do seu projeto:
+Como atualmente o módulo ainda não está disponivel no [NPM](https://www.npmjs.com/), a maneira mais facil de instanciá-lo em seu projeto é por meio de uma instalação NPM usando diretório local. Para isso, execute o `npm install <folder>`, onde `<folder>` é o caminho para o diretório onde econtra-se o módulo Pontu. Por exemplo, se o módulo estiver no mesmo nível de diretório que seu projeto, bastaria executar dentro do diretório do seu projeto:
 
 ```bash
 npm install ../pontu-module
@@ -70,14 +70,16 @@ npm install ../pontu-module
 Após incluir o módulo Pontu às dependências de seu projeto, basta utilizar a função `require`.
 
 ```js
+// Carrega o módulo Pontu
 const pontu = require('pontu-module')
 
+// Executa uma função do módulo
 const src = pontu.cloud_load_sync('mycloud.pcd')
 ```
 
 ## Pontu API
 
-As funções assíncronas do módulo **Pontu** são baseadas em [Javascript Promises](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Promise), podendo ser facilmente encadeadas ou executadas em paralelo. Esse módulo também possui funções síncronas para todos os métodos.
+As funções assíncronas do módulo **Pontu** são baseadas em [Javascript Promises](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Promise), podendo ser facilmente encadeadas ou executadas em paralelo. As funções assíncronas são o padrão de excução recomendado, entretanto, esse módulo também possui funções síncronas para todos os métodos.
 
 ### cloud_load
 
@@ -244,6 +246,8 @@ const icpRes = pontu.registration_icp_sync(
   - `icpRes.algnCloud` - Objeto a nuvem _source_ alinhada ([Cloud OBJ](#cloud-obj)).
 
 ## Exemplos
+
+> **OBS:** As nuvens de pontos, contidas no diretório `./test/clouds`, são derivações da nuvem [_Stanford Bunny_](http://graphics.stanford.edu/data/3Dscanrep/).
 
 ### Assíncrono
 
@@ -420,7 +424,7 @@ const cloudObj = {
 
 ### Matrix4
 
-Matriz 4x4 de [número complexos](https://mathjs.org/docs/datatypes/complex_numbers.html)
+Matriz 4x4 de [número complexos](https://mathjs.org/docs/datatypes/complex_numbers.html).
 
 Exemplo:
 
