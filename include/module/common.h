@@ -15,26 +15,8 @@
 #include <node_api.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-
-/**
- * @brief Função para checar o napi status e lançar exceção caso haja erro.
- * 
- * @param env Contexto que a implementação Node-API subjacente pode usar para persistir o estado específico da VM.
- * @param status Código de status integral indicando o sucesso ou falha de uma chamada Node-API. 
- * @param msg Mensagem que será apresetada junto a exceção, caso uma seja lançada.
- */
-void check_status(napi_env env, napi_status status, const char *msg);
-
-/**
- * @brief Verifica se um napi_value corresponde a um determinado napi_valuetype, e lança uma excesão caso
- * contrario.
- * 
- * @param env Contexto que a implementação Node-API subjacente pode usar para persistir o estado específico da VM.
- * @param value Variável que será checada.
- * @param expected_type Tipo de valor esperado.
- */
-void throw_type_error(napi_env env, napi_value value, napi_valuetype expected_type);
 
 /**
  * @brief Simplifica o procedimento de exportação de um método para o módulo.
@@ -44,7 +26,7 @@ void throw_type_error(napi_env env, napi_value value, napi_valuetype expected_ty
  * @param name Nome do método.
  * @param method Ponteiro para ao metodo que será chamado pelo módulo.
  */
-void export_function(napi_env env, napi_value exports, const char *name, void *method);
+void export_function(napi_env env, napi_value exports, const char *name, napi_value (*method)(napi_env, napi_callback_info));
 
 /**
  * @brief Converte uma string em minusculo.
@@ -79,8 +61,34 @@ napi_value create_promise(napi_env env,
                           napi_deferred *deferred,
                           napi_async_work *work,
                           void *addon_data,
-                          void *fn_execute,
-                          void *fn_complete,
+                          void (*fn_execute)(napi_env, void *),
+                          void (*fn_complete)(napi_env, napi_status, void *),
                           const char *promise_name);
+
+/**
+ * @brief Cria um erro que aborta a execução do programa
+ * 
+ * @param local Local onde o erro ocorreu (método ou arquivo)
+ * @param message Messagem de erro
+ */
+void create_fatal_error(const char *local, const char *message);
+
+/**
+ * @brief Insere uma mensagem de erro na estrutura de dados de um método
+ * 
+ * @param err_info Endereço que armazenará o a mensagem na estrutura de dados
+ * @param txt Mensagem que será escrita
+ */
+void addon_data_write_err(char **err_info, const char *txt);
+
+/**
+ * @brief Verifica se uma variavel é de um determinado tipo da N-API
+ * 
+ * @param env Contexto que a implementação Node-API subjacente pode usar para persistir o estado específico da VM.
+ * @param value Variavel a ser verificado
+ * @param expected_type Tipo de dados da N-API que será comparado
+ * @return int 1(um) se value for do tipo esperado e 0(zero) caso contrario
+ */
+int check_type(napi_env env, napi_value value, napi_valuetype expected_type);
 
 #endif // COMMON_H

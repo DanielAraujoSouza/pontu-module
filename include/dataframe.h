@@ -41,14 +41,14 @@ void dataframe_free(struct dataframe **mat);
  * \param mat Target dataframe
  * \return New quantity of rows of the dataframe
  */
-int dataframe_add_row(struct dataframe *mat);
+uint dataframe_add_row(struct dataframe *mat);
 
 /**
  * \brief Adds a new column into a dataframe
  * \param mat Target dataframe
  * \return New quantity of columns of the dataframe
  */
-int dataframe_add_col(struct dataframe *mat);
+uint dataframe_add_col(struct dataframe *mat);
 
 /**
  * \brief Removes a row from a dataframe

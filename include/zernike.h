@@ -33,7 +33,7 @@ int zernike_conditions(int n, int m);
  * \param rep Repetitions
  * \return Quantity of valid moments
  */
-int zernike_nummoments(int ord, int rep);
+uint zernike_nummoments(int ord, int rep);
 
 /**
  * \brief Zernike polynomial boundary conditions (filtering zero values)

@@ -5,9 +5,9 @@ int zernike_conditions(int n, int m)
 	return !(n < m || (n - m) % 2);
 }
 
-int zernike_nummoments(int ord, int rep)
+uint zernike_nummoments(int ord, int rep)
 {
-	int count = 0;
+	uint count = 0;
 
 	for (int n = 0; n <= ord; n++)
 		for (int m = 0; m <= rep; m++)
@@ -38,12 +38,13 @@ real zernike_radpoly(int n, int m, real distance)
 {
 	real radpoly = 0.0;
 
-	for (int s = 0; s <= (n - m) / 2; s++) {
+	for (int s = 0; s <= (n - m) / 2; s++)
+	{
 		real num = pow(-1, s) * (calc_factorial(n - s));
 
 		real den = calc_factorial(s) *
-		           calc_factorial(((n + m) / 2) - s) *
-		           calc_factorial(((n - m) / 2) - s);
+							 calc_factorial(((n + m) / 2) - s) *
+							 calc_factorial(((n - m) / 2) - s);
 
 		radpoly += (num * pow(distance, n - (2 * s))) / den;
 	}
@@ -73,7 +74,8 @@ real zernike_moment_odd(int n, int m, real r, struct cloud *cloud)
 	real azimuth = 0.0;
 	real moment = 0.0;
 
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		cx = set->point->x - centroid->x;
 		cy = set->point->y - centroid->y;
 		d = vector3_distance(centroid, set->point);
@@ -101,7 +103,8 @@ real zernike_moment_even(int n, int m, real r, struct cloud *cloud)
 	real azimuth = 0.0;
 	real moment = 0.0;
 
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		cx = set->point->x - centroid->x;
 		cy = set->point->y - centroid->y;
 		d = vector3_distance(centroid, set->point);
@@ -125,11 +128,12 @@ real zernike_moment_mag(int n, int m, real r, struct cloud *cloud)
 	real poly = 0.0;
 	real moment = 0.0;
 
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		d = vector3_distance(centroid, set->point);
 		dist = d / r;
 		poly = zernike_radpoly(n, m, dist);
-		
+
 		moment += poly;
 	}
 
@@ -152,7 +156,8 @@ real zernike_moment_full(int n, int m, real r, struct cloud *cloud)
 	real zenith = 0.0;
 	real moment = 0.0;
 
-	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
+	{
 		cx = set->point->x - centroid->x;
 		cy = set->point->y - centroid->y;
 		cz = set->point->z - centroid->z;
@@ -172,16 +177,19 @@ real zernike_moment_full(int n, int m, real r, struct cloud *cloud)
 
 struct dataframe *zernike_cloud_moments_odd(struct cloud *cloud)
 {
-	int s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
+	uint s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	
-	int col = 0;
+
+	uint col = 0;
 	real moment = 0.0;
 
-	for (int n = 0; n <= ZERNIKE_ORD; n++) {
-		for (int m = 0; m <= ZERNIKE_REP; m++) {
-			if (zernike_conditions(n, m)) {
+	for (int n = 0; n <= ZERNIKE_ORD; n++)
+	{
+		for (int m = 0; m <= ZERNIKE_REP; m++)
+		{
+			if (zernike_conditions(n, m))
+			{
 				moment = zernike_moment_odd(n, m, r, cloud);
 				dataframe_set(results, 0, col, moment);
 				col++;
@@ -194,16 +202,19 @@ struct dataframe *zernike_cloud_moments_odd(struct cloud *cloud)
 
 struct dataframe *zernike_cloud_moments_even(struct cloud *cloud)
 {
-	int s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
+	uint s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	
-	int col = 0;
+
+	uint col = 0;
 	real moment = 0.0;
 
-	for (int n = 0; n <= ZERNIKE_ORD; n++) {
-		for (int m = 0; m <= ZERNIKE_REP; m++) {
-			if (zernike_conditions(n, m)) {
+	for (int n = 0; n <= ZERNIKE_ORD; n++)
+	{
+		for (int m = 0; m <= ZERNIKE_REP; m++)
+		{
+			if (zernike_conditions(n, m))
+			{
 				moment = zernike_moment_even(n, m, r, cloud);
 				dataframe_set(results, 0, col, moment);
 				col++;
@@ -216,16 +227,19 @@ struct dataframe *zernike_cloud_moments_even(struct cloud *cloud)
 
 struct dataframe *zernike_cloud_moments_mag(struct cloud *cloud)
 {
-	int s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
+	uint s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	
-	int col = 0;
+
+	uint col = 0;
 	real moment = 0.0;
 
-	for (int n = 0; n <= ZERNIKE_ORD; n++) {
-		for (int m = 0; m <= ZERNIKE_REP; m++) {
-			if (zernike_conditions(n, m)) {
+	for (int n = 0; n <= ZERNIKE_ORD; n++)
+	{
+		for (int m = 0; m <= ZERNIKE_REP; m++)
+		{
+			if (zernike_conditions(n, m))
+			{
 				moment = zernike_moment_mag(n, m, r, cloud);
 				dataframe_set(results, 0, col, moment);
 				col++;
@@ -238,16 +252,19 @@ struct dataframe *zernike_cloud_moments_mag(struct cloud *cloud)
 
 struct dataframe *zernike_cloud_moments_full(struct cloud *cloud)
 {
-	int s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
+	uint s = zernike_nummoments(ZERNIKE_ORD, ZERNIKE_REP);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	
-	int col = 0;
+
+	uint col = 0;
 	real moment = 0.0;
 
-	for (int n = 0; n <= ZERNIKE_ORD; n++) {
-		for (int m = 0; m <= ZERNIKE_REP; m++) {
-			if (zernike_conditions(n, m)) {
+	for (int n = 0; n <= ZERNIKE_ORD; n++)
+	{
+		for (int m = 0; m <= ZERNIKE_REP; m++)
+		{
+			if (zernike_conditions(n, m))
+			{
 				moment = zernike_moment_full(n, m, r, cloud);
 				dataframe_set(results, 0, col, moment);
 				col++;
@@ -257,4 +274,3 @@ struct dataframe *zernike_cloud_moments_full(struct cloud *cloud)
 
 	return results;
 }
-

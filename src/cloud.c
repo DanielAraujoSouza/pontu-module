@@ -2,7 +2,7 @@
 
 struct cloud *cloud_new()
 {
-	struct cloud *cloud = malloc(sizeof(struct cloud));
+	struct cloud *cloud = (struct cloud *)malloc(sizeof(struct cloud));
 	if (cloud == NULL)
 		return NULL;
 
@@ -140,7 +140,7 @@ struct cloud *cloud_load_ply(const char *filename)
 			break;
 
 		if (!strncmp(buffer, "element vertex", 14))
-			sscanf(buffer, "element vertex %d\n", &numpts);
+			sscanf(buffer, "element vertex %u\n", &numpts);
 	}
 
 	struct cloud *cloud = cloud_new();
@@ -186,7 +186,7 @@ struct cloud *cloud_load_pcd(const char *filename)
 			break;
 
 		if (!strncmp(buffer, "POINTS", 6))
-			sscanf(buffer, "POINTS %d\n", &numpts);
+			sscanf(buffer, "POINTS %u\n", &numpts);
 	}
 
 	struct cloud *cloud = cloud_new();
@@ -557,23 +557,16 @@ void cloud_translate_real(struct cloud *cloud, real x, real y, real z)
 void cloud_transform(struct cloud *cloud, struct matrix *rt)
 {
 	struct matrix *cloud_mat = matrix_new(4, cloud->numpts);
+
 	if (cloud_mat == NULL)
 	{
 		cloud_free(&cloud);
 		return;
 	}
 
-	struct matrix *output_mat = matrix_new(4, cloud->numpts);
-	if (output_mat == NULL)
-	{
-		matrix_free(&cloud_mat);
-		cloud_free(&cloud);
-		return;
-	}
-
 	uint i = 0;
 	struct pointset *s = cloud->points;
-	if (!s)
+	if (s == NULL)
 	{
 		matrix_free(&cloud_mat);
 		return;
@@ -589,24 +582,24 @@ void cloud_transform(struct cloud *cloud, struct matrix *rt)
 		s = s->next;
 	} while (s != NULL && s != cloud->points);
 
-	output_mat = algebra_mat_prod(rt, cloud_mat);
+	struct matrix *output_mat = algebra_mat_prod(rt, cloud_mat);
 
 	matrix_free(&cloud_mat);
 
 	i = 0;
 
 	s = cloud->points;
-	if (!s)
+	if (s == NULL)
 	{
-		matrix_free(&cloud_mat);
+		matrix_free(&output_mat);
 		return;
 	}
 
 	do
 	{
-		s->point->x = matrix_get(output_mat, 0, i);
-		s->point->y = matrix_get(output_mat, 1, i);
-		s->point->z = matrix_get(output_mat, 2, i);
+		s->point->x = creal(matrix_get(output_mat, 0, i));
+		s->point->y = creal(matrix_get(output_mat, 1, i));
+		s->point->z = creal(matrix_get(output_mat, 2, i));
 		i++;
 		s = s->next;
 	} while (s != NULL && s != cloud->points);

@@ -36,7 +36,7 @@ int harmonics_conditions(int n, int m, int l);
  * \param
  * \return
  */
-int harmonics_nummoments(int ord, int rep, int spin);
+uint harmonics_nummoments(int ord, int rep, int spin);
 
 /**
  * \brief

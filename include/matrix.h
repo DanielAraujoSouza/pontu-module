@@ -48,14 +48,14 @@ struct matrix *matrix_copy(struct matrix *mat);
  * \param mat Target complex matrix
  * \return New quantity of rows of the complex matrix
  */
-int matrix_add_row(struct matrix *mat);
+uint matrix_add_row(struct matrix *mat);
 
 /**
  * \brief Adds a new column into a complex matrix
  * \param mat Target complex matrix
  * \return New quantity of columns of the  complex matrix
  */
-int matrix_add_col(struct matrix *mat);
+uint matrix_add_col(struct matrix *mat);
 
 /**
  * \brief Removes a row from a complex matrix

@@ -47,7 +47,7 @@ struct vector3 *vector3_new(real x, real y, real z);
  * \param z Coordinate z
  * \return Poiter to the new vector
  */
-struct vector3 *vector3_zero();
+struct vector3 *vector3_zero(void);
 
 /**
  * \brief Creates a new vector from another vector

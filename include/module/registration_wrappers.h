@@ -18,6 +18,7 @@
 
 typedef struct
 {
+  char *err_info;
   napi_async_work work;
   napi_deferred deferred;
   struct cloud *source;
@@ -29,13 +30,6 @@ typedef struct
   struct cloud *aligned;
   struct matrix *tm;
 } RegistrationIcpData;
-
-/**
- * @brief Desaloca memoria da esturtura RegistrationIcpData.
- * 
- * @param data Estrutura a ser desalocada.
- */
-void FreeRegistrationIcpData(RegistrationIcpData **data);
 
 /**
  * @brief Realiza, de forma assíncrona, o alinhamento de uma nuvem de pontos utilizando o algoritmo de registro ICP.

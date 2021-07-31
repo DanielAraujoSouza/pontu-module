@@ -24,7 +24,7 @@ struct pointset
  * \brief Creates a new pointset
  * \return Just a NULL pointer indicating an empty ponintset
  */
-struct pointset *pointset_new();
+struct pointset *pointset_new(void);
 
 /**
  * \brief Frees the memory allocated to a pointset

@@ -2,16 +2,23 @@
 
 struct matrix *matrix_new(uint rows, uint cols)
 {
-	struct matrix *mat = malloc(sizeof(struct matrix));
+	struct matrix *mat = (struct matrix *)malloc(sizeof(struct matrix));
+
 	if (mat == NULL)
+	{
 		return NULL;
+	}
 
 	mat->rows = rows;
 	mat->cols = cols;
 
-	mat->data = malloc(rows * cols * sizeof(cnum));
+	cnum *data = (cnum *)malloc(rows * cols * sizeof(cnum));
+
+	mat->data = data;
 	if (mat->data == NULL)
+	{
 		return NULL;
+	}
 
 	for (uint i = 0; i < rows; i++)
 		for (uint j = 0; j < cols; j++)
@@ -45,7 +52,7 @@ struct matrix *matrix_copy(struct matrix *mat)
 	return mat_cpy;
 }
 
-int matrix_add_row(struct matrix *mat)
+uint matrix_add_row(struct matrix *mat)
 {
 	cnum *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(cnum));
 
@@ -65,7 +72,7 @@ int matrix_add_row(struct matrix *mat)
 	}
 }
 
-int matrix_add_col(struct matrix *mat)
+uint matrix_add_col(struct matrix *mat)
 {
 	cnum *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(cnum));
 	if (new_mat == NULL)
@@ -99,13 +106,13 @@ struct matrix *matrix_remove_row(struct matrix *mat, uint row)
 	if (new_mat == NULL)
 		return NULL;
 
-	uint k = -1;
+	int k = -1;
 
 	for (uint i = 0; i < new_mat->rows; i++)
 	{
 		k += row == i ? 2 : 1;
 		for (uint j = 0; j < new_mat->cols; j++)
-			matrix_set(new_mat, i, j, matrix_get(mat, k, j));
+			matrix_set(new_mat, i, j, matrix_get(mat, (uint)k, j));
 	}
 
 	return new_mat;
@@ -122,7 +129,7 @@ struct matrix *matrix_remove_col(struct matrix *mat, uint col)
 	if (new_mat == NULL)
 		return NULL;
 
-	uint k;
+	int k;
 
 	for (uint i = 0; i < new_mat->rows; i++)
 	{
@@ -130,7 +137,7 @@ struct matrix *matrix_remove_col(struct matrix *mat, uint col)
 		for (uint j = 0; j < new_mat->cols; j++)
 		{
 			k += col == j ? 2 : 1;
-			matrix_set(new_mat, i, j, matrix_get(mat, i, k));
+			matrix_set(new_mat, i, j, matrix_get(mat, i, (uint)k));
 		}
 	}
 
@@ -209,7 +216,7 @@ int matrix_save_to_file(struct matrix *mat,
 	FILE *file = fopen(filename, m);
 	if (file == NULL)
 	{
-		printf("%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
+		printf("%s: erro abrir arquivo %s\n", __func__, filename);
 		return 0;
 	}
 

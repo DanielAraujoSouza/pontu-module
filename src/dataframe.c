@@ -8,7 +8,7 @@ struct dataframe *dataframe_new(uint rows, uint cols)
 
 	mat->rows = rows;
 	mat->cols = cols;
-	
+
 	mat->data = malloc(rows * cols * sizeof(real));
 	if (mat->data == NULL)
 		return NULL;
@@ -31,11 +31,12 @@ void dataframe_free(struct dataframe **mat)
 	*mat = NULL;
 }
 
-int dataframe_add_row(struct dataframe *mat)
+uint dataframe_add_row(struct dataframe *mat)
 {
 	real *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(real));
 
-	if (row != NULL) {
+	if (row != NULL)
+	{
 		mat->data = row;
 		mat->rows++;
 
@@ -43,12 +44,14 @@ int dataframe_add_row(struct dataframe *mat)
 			mat->data[((mat->rows - 1) * mat->cols) + j] = 0.0;
 
 		return mat->rows;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-int dataframe_add_col(struct dataframe *mat)
+uint dataframe_add_col(struct dataframe *mat)
 {
 	real *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(real));
 	if (new_mat == NULL)
@@ -61,10 +64,10 @@ int dataframe_add_col(struct dataframe *mat)
 	for (uint i = 0; i < mat->rows; i++)
 		for (uint j = 0; j < mat->cols; j++)
 			new_mat[(i * (mat->cols + 1)) + j] =
-			    mat->data[(i * mat->cols) + j];
+					mat->data[(i * mat->cols) + j];
 
 	free(mat->data);
-	
+
 	mat->data = new_mat;
 	mat->cols++;
 
@@ -73,20 +76,22 @@ int dataframe_add_col(struct dataframe *mat)
 
 struct dataframe *dataframe_remove_row(struct dataframe *mat, uint row)
 {
-	if (row >= mat->rows) {
+	if (row >= mat->rows)
+	{
 		return NULL;
 	}
 
 	struct dataframe *new_mat = dataframe_new(mat->rows - 1, mat->cols);
 	if (new_mat == NULL)
 		return NULL;
-	
-	uint k = -1;
 
-	for (uint i = 0; i < new_mat->rows; i++) {
+	int k = -1;
+
+	for (uint i = 0; i < new_mat->rows; i++)
+	{
 		k += row == i ? 2 : 1;
 		for (uint j = 0; j < new_mat->cols; j++)
-			dataframe_set(new_mat, i, j, dataframe_get(mat, k, j));
+			dataframe_set(new_mat, i, j, dataframe_get(mat, (uint)k, j));
 	}
 
 	return new_mat;
@@ -94,21 +99,24 @@ struct dataframe *dataframe_remove_row(struct dataframe *mat, uint row)
 
 struct dataframe *dataframe_remove_col(struct dataframe *mat, uint col)
 {
-	if (col >= mat->cols) {
+	if (col >= mat->cols)
+	{
 		return NULL;
 	}
 
 	struct dataframe *new_mat = dataframe_new(mat->rows, mat->cols - 1);
 	if (new_mat == NULL)
 		return NULL;
-	
-	uint k;
 
-	for (uint i = 0; i < new_mat->rows; i++) {
+	int k;
+
+	for (uint i = 0; i < new_mat->rows; i++)
+	{
 		k = -1;
-		for (uint j = 0; j < new_mat->cols; j++) {
+		for (uint j = 0; j < new_mat->cols; j++)
+		{
 			k += col == j ? 2 : 1;
-			dataframe_set(new_mat, i, j, dataframe_get(mat, i, k));
+			dataframe_set(new_mat, i, j, dataframe_get(mat, i, (uint)k));
 		}
 	}
 
@@ -117,9 +125,12 @@ struct dataframe *dataframe_remove_col(struct dataframe *mat, uint col)
 
 real *dataframe_set(struct dataframe *mat, uint i, uint j, real value)
 {
-	if (i >= mat->rows || j >= mat->cols) {
+	if (i >= mat->rows || j >= mat->cols)
+	{
 		return NULL;
-	} else {
+	}
+	else
+	{
 		mat->data[(i * mat->cols) + j] = value;
 		return &mat->data[(i * mat->cols) + j];
 	}
@@ -134,7 +145,7 @@ real dataframe_get(struct dataframe *mat, uint i, uint j)
 }
 
 struct dataframe *dataframe_concat_hor(struct dataframe *m1,
-                                       struct dataframe *m2)
+																			 struct dataframe *m2)
 {
 	if (m1->rows != m2->rows)
 		return NULL;
@@ -157,7 +168,7 @@ struct dataframe *dataframe_concat_hor(struct dataframe *m1,
 }
 
 struct dataframe *dataframe_concat_ver(struct dataframe *m1,
-                                       struct dataframe *m2)
+																			 struct dataframe *m2)
 {
 	if (m1->cols != m2->cols)
 		return NULL;
@@ -180,17 +191,20 @@ struct dataframe *dataframe_concat_ver(struct dataframe *m1,
 }
 
 int dataframe_save_to_file(struct dataframe *mat,
-                           const char *filename,
-                           const char *m)
+													 const char *filename,
+													 const char *m)
 {
 	FILE *file = fopen(filename, m);
-	if (file == NULL) {
-		printf("%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
+	if (file == NULL)
+	{
+		printf("%s: erro abrir arquivo %s\n", __func__, filename);
 		return 0;
 	}
 
-	for (uint row = 0; row < mat->rows; row++) {
-		for (uint col = 0; col < mat->cols; col++) {
+	for (uint row = 0; row < mat->rows; row++)
+	{
+		for (uint col = 0; col < mat->cols; col++)
+		{
 			fprintf(file, "%le", dataframe_get(mat, row, col));
 			if (col + 1 < mat->cols)
 				fprintf(file, "%c", ',');
@@ -206,13 +220,16 @@ int dataframe_save_to_file(struct dataframe *mat,
 
 void dataframe_debug(struct dataframe *mat, FILE *output)
 {
-	if (mat == NULL) {
+	if (mat == NULL)
+	{
 		fprintf(output, "!!! dataframe empty !!!\n");
 		return;
 	}
 
-	for (uint i = 0; i < mat->rows; i++) {
-		for (uint j = 0; j < mat->cols; j++) {
+	for (uint i = 0; i < mat->rows; i++)
+	{
+		for (uint j = 0; j < mat->cols; j++)
+		{
 			if (j == mat->cols - 1)
 				fprintf(output, "%le", mat->data[(i * mat->cols) + j]);
 			else
@@ -222,4 +239,3 @@ void dataframe_debug(struct dataframe *mat, FILE *output)
 		fprintf(output, "\n");
 	}
 }
-

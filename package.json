@@ -1,12 +1,16 @@
 {
   "main": "lib/binding.js",
   "dependencies": {
-    "node-addon-api": "^1.1.0",
     "tap-spec": "^2.2.2",
     "tape": "^5.2.2"
   },
   "scripts": {
-    "test": "node --napi-modules ./test/test_binding.js | tap-spec"
+    "test": "node --napi-modules ./test/test_binding.js | tap-spec",
+    "pretty": "prettier --write \"./**/*.{js,jsx,json,c,h}\"",
+    "rebuild": "node-gyp rebuild",
+    "rebuild-debug": "node-gyp --debug rebuild",
+    "build": "node-gyp build",
+    "build-debug": "node-gyp --debug build"
   },
   "gypfile": true,
   "name": "pontu-module",
@@ -20,5 +24,13 @@
     "pcd"
   ],
   "author": "Daniel Araújo Chaves Souza",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.3.2"
+  }
 }

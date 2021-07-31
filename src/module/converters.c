@@ -1,241 +1,373 @@
 #include "../../include/module/converters.h"
 
-struct vector3 *napi_object_to_pontu_vector3(napi_env env, napi_value point)
+napi_status napi_object_to_pontu_vector3(napi_env env, napi_value point, struct vector3 **new_vector3)
 {
-  napi_status status;
   napi_value x, y, z;
   real x_real, y_real, z_real;
 
-  status = napi_get_named_property(env, point, "x", &x);
-  check_status(env, status, "Failed to load x point!");
+  if (napi_get_named_property(env, point, "x", &x) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_value_double(env, x, &x_real);
-  check_status(env, status, "Failed to convert x to real!");
+  if (napi_get_value_double(env, x, &x_real) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_named_property(env, point, "y", &y);
-  check_status(env, status, "Failed to load y point!");
+  if (napi_get_named_property(env, point, "y", &y) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_value_double(env, y, &y_real);
-  check_status(env, status, "Failed to convert y to real!");
+  if (napi_get_value_double(env, y, &y_real) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_named_property(env, point, "z", &z);
-  check_status(env, status, "Failed to load z point!");
+  if (napi_get_named_property(env, point, "z", &z) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_value_double(env, z, &z_real);
-  check_status(env, status, "Failed to convert z to real!");
+  if (napi_get_value_double(env, z, &z_real) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  return vector3_new(x_real, y_real, z_real);
+  *new_vector3 = vector3_new(x_real, y_real, z_real);
+  if (*new_vector3 == NULL)
+  {
+    return napi_generic_failure;
+  }
+
+  return napi_ok;
 }
 
-napi_value pontu_vector3_to_napi_object(napi_env env, struct vector3 *point)
+napi_status pontu_vector3_to_napi_object(napi_env env, struct vector3 *point, napi_value *point_obj)
 {
-  napi_status status;
-  napi_value point_obj, x, y, z;
+  if (point == NULL)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_create_object(env, &point_obj);
-  check_status(env, status, "Failed to create vector3 object!");
+  napi_value x, y, z;
 
-  status = napi_create_double(env, point->x, &x);
-  check_status(env, status, "Failed to convert x to double!");
+  if (napi_create_object(env, point_obj) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_set_named_property(env, point_obj, "x", x);
-  check_status(env, status, "Failed to set property x!");
+  if (napi_create_double(env, point->x, &x) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_create_double(env, point->y, &y);
-  check_status(env, status, "Failed to convert y to double!");
+  if (napi_set_named_property(env, *point_obj, "x", x) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_set_named_property(env, point_obj, "y", y);
-  check_status(env, status, "Failed to set property y!");
+  if (napi_create_double(env, point->y, &y) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_create_double(env, point->z, &z);
-  check_status(env, status, "Failed to convert z to double!");
+  if (napi_set_named_property(env, *point_obj, "y", y) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_set_named_property(env, point_obj, "z", z);
-  check_status(env, status, "Failed to set property z!");
+  if (napi_create_double(env, point->z, &z) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  return point_obj;
+  if (napi_set_named_property(env, *point_obj, "z", z) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
+
+  return napi_ok;
 }
 
-struct cloud *napi_object_to_pontu_cloud(napi_env env, napi_value cloud)
+napi_status napi_object_to_pontu_cloud(napi_env env, napi_value cloud, struct cloud **new_cloud)
 {
-  struct cloud *new_cloud = cloud_new();
+  if (cloud == NULL)
+  {
+    return napi_generic_failure;
+  }
 
-  napi_status status;
+  *new_cloud = cloud_new();
+
   napi_value points;
   uint32_t points_len;
 
-  status = napi_get_named_property(env, cloud, "points", &points);
-  check_status(env, status, "Failed to load points!");
+  if (napi_get_named_property(env, cloud, "points", &points) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_array_length(env, points, &points_len);
-  check_status(env, status, "Failed to load points array length!");
+  if (napi_get_array_length(env, points, &points_len) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
   for (uint32_t i = 0; i < points_len; i++)
   {
     napi_value point;
 
-    status = napi_get_element(env, points, i, &point);
-    check_status(env, status, "Failed to load a point from the cloud!");
+    if (napi_get_element(env, points, i, &point) != napi_ok)
+    {
+      return napi_generic_failure;
+    }
 
-    cloud_insert_vector3(new_cloud, napi_object_to_pontu_vector3(env, point));
+    struct vector3 *new_vector3 = NULL;
+    if (napi_object_to_pontu_vector3(env, point, &new_vector3) != napi_ok)
+    {
+      vector3_free(&new_vector3);
+      return napi_generic_failure;
+    }
+
+    cloud_insert_vector3(*new_cloud, new_vector3);
+    vector3_free(&new_vector3);
   }
 
-  return new_cloud;
+  return napi_ok;
 }
 
-napi_value pontu_cloud_to_napi_object(napi_env env, struct cloud *cloud)
+napi_status pontu_cloud_to_napi_object(napi_env env, struct cloud *cloud, napi_value *cloud_obj)
 {
-  napi_status status;
-  napi_value cloud_obj, num_pts;
+  if (cloud == NULL)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_create_object(env, &cloud_obj);
-  check_status(env, status, "Failed to create cloud object!");
+  napi_value num_pts, points;
 
-  status = napi_create_int32(env, cloud->numpts, &num_pts);
-  check_status(env, status, "Failed to create numpts property!");
+  if (napi_create_object(env, cloud_obj) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_set_named_property(env, cloud_obj, "numpts", num_pts);
-  check_status(env, status, "Failed to set numpts property!");
+  if (napi_create_int32(env, (int)cloud->numpts, &num_pts) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_set_named_property(env, cloud_obj, "points", pontu_pointset_to_napi_array(env, cloud->points));
-  check_status(env, status, "Failed to set points property!");
+  if (napi_set_named_property(env, *cloud_obj, "numpts", num_pts) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  return cloud_obj;
+  if (pontu_pointset_to_napi_array(env, cloud->points, &points) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
+
+  if (napi_set_named_property(env, *cloud_obj, "points", points) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
+
+  return napi_ok;
 }
 
-napi_value pontu_pointset_to_napi_array(napi_env env, struct pointset *point_set)
+napi_status pontu_pointset_to_napi_array(napi_env env, struct pointset *point_set, napi_value *points)
 {
-  napi_status status;
-  napi_value points;
+  if (point_set == NULL)
+  {
+    return napi_generic_failure;
+  }
+
   uint numpts = pointset_size(point_set);
   uint32_t i = 0;
 
-  status = napi_create_array_with_length(env, numpts, &points);
-  check_status(env, status, "Failed to create points array!");
+  if (napi_create_array_with_length(env, numpts, points) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
   struct pointset *s = point_set;
   if (s)
   {
     do
     {
-      status = napi_set_element(env, points, i++, pontu_vector3_to_napi_object(env, s->point));
-      check_status(env, status, "Failed to set point object!");
+      napi_value point_obj;
+      if (pontu_vector3_to_napi_object(env, s->point, &point_obj) != napi_ok)
+      {
+        return napi_generic_failure;
+      }
+
+      if (napi_set_element(env, *points, i++, point_obj) != napi_ok)
+      {
+        return napi_generic_failure;
+      }
       s = s->next;
     } while (s != NULL && s != point_set);
   }
-  return points;
+  return napi_ok;
 }
 
-struct matrix *napi_array_to_pontu_matrix(napi_env env, napi_value rt)
+napi_status napi_array_to_pontu_matrix(napi_env env, napi_value rt, struct matrix **rt_mat)
 {
-  napi_status status;
   uint32_t i_len;
-  struct matrix *rt_mat = NULL;
 
-  status = napi_get_array_length(env, rt, &i_len);
-  check_status(env, status, "Failed to get matrix row length!");
+  if (napi_get_array_length(env, rt, &i_len) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
   for (uint32_t i = 0; i < i_len; i++)
   {
     napi_value row;
     uint32_t j_len;
 
-    status = napi_get_element(env, rt, i, &row);
-    check_status(env, status, "Failed to load a row from the matrix!");
-
-    status = napi_get_array_length(env, row, &j_len);
-    check_status(env, status, "Failed to get matrix column length!");
-
-    if (rt_mat == NULL)
+    if (napi_get_element(env, rt, i, &row) != napi_ok)
     {
-      rt_mat = matrix_new(1, j_len);
+      return napi_generic_failure;
     }
-    else if (matrix_add_row(rt_mat) == 0)
+
+    if (napi_get_array_length(env, row, &j_len) != napi_ok)
     {
-      napi_throw_error(env, NULL, "Failed to add row to matrix");
+      return napi_generic_failure;
+    }
+
+    if (*rt_mat == NULL)
+    {
+      *rt_mat = matrix_new(1, j_len);
+      if (*rt_mat == NULL)
+      {
+        return napi_generic_failure;
+      }
+    }
+    else if (matrix_add_row(*rt_mat) == 0)
+    {
+      return napi_generic_failure;
     }
 
     for (uint32_t j = 0; j < j_len; j++)
     {
       napi_value num;
+      cnum element = 0;
 
-      status = napi_get_element(env, row, j, &num);
-      check_status(env, status, "Failed to get the element from the array!");
+      if (napi_get_element(env, row, j, &num) != napi_ok)
+      {
+        return napi_generic_failure;
+      }
 
-      matrix_set(rt_mat, i, j, napi_object_to_pontu_cnum(env, num));
+      if (napi_object_to_pontu_cnum(env, num, &element) != napi_ok)
+      {
+        return napi_generic_failure;
+      }
+
+      matrix_set(*rt_mat, i, j, element);
     }
   }
 
-  return rt_mat;
+  return napi_ok;
 }
 
-napi_value pontu_matrix_to_napi_array(napi_env env, struct matrix *mat)
+napi_status pontu_matrix_to_napi_array(napi_env env, struct matrix *mat, napi_value *m_arr)
 {
-  napi_status status;
-  napi_value m_arr;
+  if (mat == NULL)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_create_array_with_length(env, mat->rows, &m_arr);
-  check_status(env, status, "Failed to create matrix m array!");
+  if (napi_create_array_with_length(env, mat->rows, m_arr) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
   for (uint32_t i = 0; i < mat->rows; i++)
   {
     napi_value n_arr;
-    status = napi_create_array_with_length(env, mat->rows, &n_arr);
-    check_status(env, status, "Failed to create matrix n array!");
+    if (napi_create_array_with_length(env, mat->rows, &n_arr) != napi_ok)
+    {
+      return napi_generic_failure;
+    }
 
     for (uint32_t j = 0; j < mat->cols; j++)
     {
-      status = napi_set_element(env, n_arr, j, pontu_cnum_to_napi_object(env, matrix_get(mat, i, j)));
-      check_status(env, status, "Failed to set cnum object!");
+      napi_value element;
+      if (pontu_cnum_to_napi_object(env, matrix_get(mat, i, j), &element) != napi_ok)
+      {
+        return napi_generic_failure;
+      }
+
+      if (napi_set_element(env, n_arr, j, element) != napi_ok)
+      {
+        return napi_generic_failure;
+      }
     }
 
-    status = napi_set_element(env, m_arr, i, n_arr);
-    check_status(env, status, "Failed to set row array!");
+    if (napi_set_element(env, *m_arr, i, n_arr) != napi_ok)
+    {
+      return napi_generic_failure;
+    }
   }
 
-  return m_arr;
+  return napi_ok;
 }
 
-cnum napi_object_to_pontu_cnum(napi_env env, napi_value num)
+napi_status napi_object_to_pontu_cnum(napi_env env, napi_value num, cnum *ncpx)
 {
-  napi_status status;
   napi_value re_nv, im_nv;
   double re, im;
 
-  status = napi_get_named_property(env, num, "re", &re_nv);
-  check_status(env, status, "Failed to load real value!");
+  if (napi_get_named_property(env, num, "re", &re_nv) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_value_double(env, re_nv, &re);
-  check_status(env, status, "Failed to convert re to double!");
+  if (napi_get_value_double(env, re_nv, &re) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_named_property(env, num, "im", &im_nv);
-  check_status(env, status, "Failed to load imaginary value!");
+  if (napi_get_named_property(env, num, "im", &im_nv) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_get_value_double(env, im_nv, &im);
-  check_status(env, status, "Failed to convert im to double!");
+  if (napi_get_value_double(env, im_nv, &im) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  return re + im * I;
+  *ncpx = re + im * I;
+  return napi_ok;
 }
 
-napi_value pontu_cnum_to_napi_object(napi_env env, cnum num)
+napi_status pontu_cnum_to_napi_object(napi_env env, cnum num, napi_value *num_obj)
 {
-  napi_status status;
-  napi_value num_obj, re, im;
+  napi_value re, im;
 
-  status = napi_create_object(env, &num_obj);
-  check_status(env, status, "Failed to create cnum object!");
+  if (napi_create_object(env, num_obj) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_create_double(env, creal(num), &re);
-  check_status(env, status, "Failed to convert the real part of the complex number!");
+  if (napi_create_double(env, creal(num), &re) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_create_double(env, cimag(num), &im);
-  check_status(env, status, "Failed to convert the imaginary part of the complex number!");
+  if (napi_create_double(env, cimag(num), &im) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_set_named_property(env, num_obj, "re", re);
-  check_status(env, status, "Failed to set re property!");
+  if (napi_set_named_property(env, *num_obj, "re", re) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  status = napi_set_named_property(env, num_obj, "im", im);
-  check_status(env, status, "Failed to set im property!");
+  if (napi_set_named_property(env, *num_obj, "im", im) != napi_ok)
+  {
+    return napi_generic_failure;
+  }
 
-  return num_obj;
+  return napi_ok;
 }
