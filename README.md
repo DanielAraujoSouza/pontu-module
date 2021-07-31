@@ -1,6 +1,6 @@
 # Módulo Pontu - Node.Js
 
-Esse módulo nativo adapta a biblioteca [**Pontu**](https://gitlab.com/interfacesufc/pontu), para processamento de nuvens de pontos 3D, desenvolvida em **C**, ao ambiente javascript **Node.JS**. Esse módulo é desenvolvido a partir da API de desenvolvimento de complementos nativos do projeto Node.JS, [node-addon-api](https://github.com/nodejs/node-addon-api). Com o módulo Pontu é possivel realiza a manipulação e processamento de nuvens de pontos 3D de forma fácil sem abrir mão do desempenho proporcionado por uma linguagem de programação de baixo nível.
+Esse módulo nativo adapta a biblioteca [**Pontu**](https://gitlab.com/interfacesufc/pontu), para processamento de nuvens de pontos 3D, desenvolvida em **C**, ao ambiente javascript **Node.JS**. Esse módulo é desenvolvido a partir da API de desenvolvimento de complementos nativos do projeto Node.JS, [Node-API](https://nodejs.org/api/n-api.html). Com o módulo Pontu é possivel realiza a manipulação e processamento de nuvens de pontos 3D de forma fácil sem abrir mão do desempenho proporcionado por uma linguagem de programação de mais baixo nível.
 
 ## Índice
 
@@ -8,7 +8,7 @@ Esse módulo nativo adapta a biblioteca [**Pontu**](https://gitlab.com/interface
 - [Instalação](#instalação)
 - [Testes](#testes)
 - [Uso](#uso)
-- [Pontu API](#pontu-api)
+- [API](#api)
   - [cloud_load](#cloud_load)
   - [cloud_load_sync](#cloud_load_sync)
   - [cloud_rmse](#cloud_rmse)
@@ -31,13 +31,12 @@ Esse módulo nativo adapta a biblioteca [**Pontu**](https://gitlab.com/interface
 
 - Uma versão do [Node.js](https://nodejs.org/) instalada;
 - Módulo global [node-gyp](https://www.npmjs.com/package/node-gyp);
-- Módulo [node-addon-api](https://github.com/nodejs/node-addon-api) (instalado automaticamente no passo seguinte);
 
 ## Instalação
 
 > **OBS:** Se ainda não possuir nenhuma versão do Node.JS [faça o download e instale](https://nodejs.org/en/download/).
 
-Em seguida faça o download desse projeto, acesse o diretório do projeto a partir do terminal e execute o comando abaixo para instalar o módulo **node-gyp**, responsável por compilar o módulo nativo, de forma global.
+Em seguida faça o download desse projeto, acesse o diretório do projeto, a partir do terminal, e execute o comando abaixo para instalar, de forma global, o módulo **node-gyp**, responsável por compilar o módulo nativo.
 
 > **OBS:** Para o que **node-gyp** consiga compilar seu código corretamente, o sistema operacional precisa ter as ferramentas de compilação adequadas instaladas. Verifique as dependências, para o seu sistema operacional, no [repositório do projeto node-gyp](https://github.com/nodejs/node-gyp#installation).
 
@@ -61,7 +60,7 @@ npm test
 
 ## Uso
 
-Como atualmente o módulo ainda não está disponivel no [NPM](https://www.npmjs.com/), a maneira mais facil de instanciá-lo em seu projeto é por meio de uma instalação NPM usando diretório local. Para isso, execute o `npm install <folder>`, onde `<folder>` é o caminho para o diretório onde econtra-se o módulo Pontu. Por exemplo, se o módulo estiver no mesmo nível de diretório que seu projeto, bastaria executar dentro do diretório do seu projeto:
+Como atualmente o módulo ainda não está disponivel no [NPM](https://www.npmjs.com/), a maneira mais facil de instanciá-lo, em seu projeto, é por meio de uma instalação NPM usando diretório local. Para isso, execute o `npm install <folder>`, onde `<folder>` é o caminho para o diretório onde econtra-se o módulo Pontu. Por exemplo, se o módulo estiver no mesmo nível de diretório que seu projeto, bastaria executar, dentro do diretório do seu projeto:
 
 ```bash
 npm install ../pontu-module
@@ -77,7 +76,7 @@ const pontu = require('pontu-module')
 const src = pontu.cloud_load_sync('mycloud.pcd')
 ```
 
-## Pontu API
+## API
 
 As funções assíncronas do módulo **Pontu** são baseadas em [Javascript Promises](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Promise), podendo ser facilmente encadeadas ou executadas em paralelo. As funções assíncronas são o padrão de excução recomendado, entretanto, esse módulo também possui funções síncronas para todos os métodos.
 
